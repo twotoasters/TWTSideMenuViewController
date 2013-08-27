@@ -1,6 +1,6 @@
 ## TWTSideMenuViewController
 
-One of the most common implementations of menu views has been the "Side Drawer", "basement", or "Side Menu" made popular in apps such as Facebook and Path. When the user taps to open the side menu the user's main context slides to the right (or left in some implementations) do display another view _below_. This works well in iOS 6 and before. What does it mean for iOS 7?
+One of the most common implementations of menu views has been the "Side Drawer", "basement", or "Side Menu" made popular in apps such as Facebook and Path. When the user taps to open the side menu the user's main context slides to the right (or left in some implementations) to display another view _below_. This works well in iOS 6 and before. What does it mean for iOS 7?
 
 With iOS 7, apps are encouraged to use the whole screen and not rely on the 20pt status bar to be outside of the plane of your app. This breaks the existing side bar idea in that the status bar now lives over two view contexts with a single style.
 
