@@ -12,25 +12,25 @@ Working with the team at Luvocracy, we needed to find a way to show a side menu 
 
 ### Usage
 
-Implemented using a single parent view controller that manages your menu and main view as children view controllers. To setup init a new instance of the TWTSideMenuViewController and supply a menu view controller and a main view controller.
+TWTSideMenuViewController is implemented using a single parent view controller that manages your menu and main views as child view controllers. To set it up, initialize a new instance of TWTSideMenuViewController and supply a menu view controller and a main view controller.
 
 ```objective-c
 
   // application:didFinishLaunchingWithOptions:
 
-  self.menuViewController = [[TWTMenuViewController alloc] initWithNibName:nil bundle:nil];
-  self.mainViewController = [[TWTMainViewController alloc] initWithNibName:nil bundle:nil];
+  self.menuViewController = [[UIViewController alloc] initWithNibName:nil bundle:nil];
+  self.mainViewController = [[UIViewController alloc] initWithNibName:nil bundle:nil];
   
   // create a new side menu
   self.sideMenuViewController = [[TWTSideMenuViewController alloc] initWithMenuViewController:self.menuViewController mainViewController:[[UINavigationController alloc] initWithRootViewController:self.mainViewController]];
 
-  // specify the shadow color to use behind the 
+  // specify the shadow color to use behind the main view controller when it is scaled down.
   self.sideMenuViewController.shadowColor = [UIColor blackColor];
 
-  // specify an edge offset to offset the open position of the menu
-  self.sideMenuViewController.edgeOffset = (UIOffset) { .horizontal = 18.0f };
+  // specify a UIOffset to offset the open position of the menu
+  self.sideMenuViewController.edgeOffset = UIOffsetMake(18.0f, 0.0f);
 
-  // specify a scale to zoom the interface
+  // specify a scale to zoom the interface — the scale is 0.0 (scaled to 0% of it's size) to 1.0 (not scaled at all). The example here specifies that it zooms so that the main view is 56.34% of it's size in open mode. 
   self.sideMenuViewController.zoomScale = 0.5634f;
 
   // set the side menu controller as the root view controller
@@ -50,14 +50,14 @@ Later, when you need to change what is in the main view controller's context you
 
 ### TODO
 
-- Built for the needs of one app and needs to be used more to find more requirements
-- Better support for landscape
-- Lots of Testing
+- Find additional requirements as the library is used in additional apps. (This initial version was built to meet the needs of a single app).
+- Add better support for landscape.
+- Add Tests
 
 ### Requirements
 
-Base SDK: iOS 7
-Deployment Target: iOS 6+
+- Base SDK: iOS 7
+- Deployment Target: iOS 6+
 
 ### Contact
 
