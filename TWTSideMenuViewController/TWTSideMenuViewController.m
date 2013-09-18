@@ -231,7 +231,8 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     [self addShadowToViewController:incomingViewController];
     [self addViewController:incomingViewController];
     [self.containerView addSubview:incomingViewController.view];
-    
+
+    incomingViewController.view.frame = self.containerView.bounds;
     incomingViewController.view.transform = CGAffineTransformTranslate(incomingViewController.view.transform, outgoingStartX, 0.0f);
     
     void (^swapChangeBlock)(void) = ^{
