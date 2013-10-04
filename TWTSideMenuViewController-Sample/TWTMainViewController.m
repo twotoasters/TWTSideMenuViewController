@@ -35,6 +35,11 @@ static NSString * const kTableViewCellIdentifier = @"com.twotoasters.sampleCell"
     [self.sideMenuViewController openMenuAnimated:YES completion:nil];
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    NSLog(@"did rotate main");
+}
+
 #pragma mark - UITableViewDelegate & UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section

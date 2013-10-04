@@ -86,6 +86,28 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     self.menuViewController.view.transform = [self closeTransformForMenuView];
 }
 
+- (BOOL)shouldAutorotate
+{
+    return YES;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskAll;
+}
+
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    [self closeMenuAnimated:NO completion:^(BOOL finished) {
+        self.mainViewController.view.frame = self.view.bounds;
+        [self openMenuAnimated:NO completion:nil];
+    }];
+
+    NSLog(@"did rotate");
+}
+
 #pragma mark - Status Bar management
 
 - (UIStatusBarStyle)preferredStatusBarStyle
@@ -194,6 +216,7 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
                          completion:closeCompleteBlock];
     } else {
         closeMenuBlock();
+        closeCompleteBlock(YES);
     }
 }
 

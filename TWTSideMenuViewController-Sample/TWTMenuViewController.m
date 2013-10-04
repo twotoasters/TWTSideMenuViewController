@@ -71,4 +71,10 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    NSLog(@"did rotate menu");
+}
+
+
 @end
