@@ -18,6 +18,24 @@
 
 @implementation TWTMenuViewController
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    NSLog(@"left viewDidAppear");
+}
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    NSLog(@"left viewWillAppear");
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    NSLog(@"left viewDidDisappear");
+}
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    NSLog(@"left viewWillDisappear");
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -27,7 +45,8 @@
     self.backgroundImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"galaxy"]];
     
     CGRect imageViewRect = [[UIScreen mainScreen] bounds];
-    imageViewRect.size.width += 589;
+    imageViewRect.size.width += 909;
+    imageViewRect.origin.x -= 320;
     self.backgroundImageView.frame = imageViewRect;
     self.backgroundImageView.contentMode = UIViewContentModeScaleAspectFit;
     [self.view addSubview:self.backgroundImageView];

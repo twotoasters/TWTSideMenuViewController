@@ -22,6 +22,12 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSInteger,XHDrawerSide){
+    XHDrawerSideNone = 0,
+    XHDrawerSideLeft,
+    XHDrawerSideRight,
+};
+
 @class TWTSideMenuViewController;
 
 @interface TWTSideMenuViewController : UIViewController
@@ -42,10 +48,12 @@
 @property (nonatomic, strong) UIColor *shadowColor;
 
 /** Left side menu view */
-@property (nonatomic, strong) IBOutlet UIViewController *menuViewController;
+@property (nonatomic, strong) UIViewController *menuViewController;
 
 /** Main View */
-@property (nonatomic, strong) IBOutlet UIViewController *mainViewController;
+@property (nonatomic, strong) UIViewController *mainViewController;
+
+@property (nonatomic, assign, readonly) XHDrawerSide openSide;
 
 /** When the menu is opened, a transparent button is displayed over the main view. This property gives the opportunity to modify it's accessibility label. */
 @property (nonatomic, copy) NSString *closeOverlayAccessibilityLabel;
