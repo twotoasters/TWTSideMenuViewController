@@ -23,20 +23,21 @@
 #import "TWTSideMenuViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import <objc/runtime.h>
+#import "UIView-Transform.h"
 
 static NSTimeInterval const kDefaultAnimationDelayDuration = 0.2;
-static NSTimeInterval const kDefaultAnimationDuration = 0.4;
-static NSTimeInterval const kDefaultSwapAnimationDuration = 0.45;
-static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
+static NSTimeInterval const kDefaultAnimationDuration = 0.5;
+static NSTimeInterval const kDefaultSwapAnimationDuration = 0.55;
+static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.45;
 
 @interface TWTSideMenuViewController () {
-    CGAffineTransform leftCloseTransfrom;
+    CGAffineTransform menuCloseTransfrom;
     CGAffineTransform mainOpenTransfrom;
     
     CGAffineTransform originScaleTransfrom;
 }
 
-@property (nonatomic, strong) UIButton *closeOverlayButton;
+@property (nonatomic, strong) UIView *closeOverlayView;
 @property (nonatomic, strong) UIView *containerView;
 
 @end
@@ -92,9 +93,24 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     [self.view addSubview:self.containerView];
     
     self.menuViewController.view.transform = [self closeTransformForMenuView];
+    menuCloseTransfrom = self.menuViewController.view.transform;
+    
+    _closeOverlayView = [[UIView alloc] initWithFrame:self.containerView.bounds];
+    self.closeOverlayView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.6];
+    self.closeOverlayView.alpha = 0.;
+    [self.view addSubview:self.closeOverlayView];
+    
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureHandle:)];
+    [self.closeOverlayView addGestureRecognizer:tapGesture];
 }
 
 #pragma mark - UIGesture
+
+- (void)tapGestureHandle:(UITapGestureRecognizer *)tapGesture {
+    if (!self.open)
+        return ;
+    [self closeMenuAnimated:YES completion:NULL];
+}
 
 - (void)panGestureHandle:(UIPanGestureRecognizer *)panGesture {
     UIGestureRecognizerState state = panGesture.state;
@@ -107,21 +123,17 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
             
             
             if (!self.open) {
+                // 当Menu关闭的时候
                 CGFloat xOffset = translation.x * 0.9;
-                
                 CGFloat width = 857.5;
                 
                 float scaleOffset = (1.0 - (xOffset / width));
                 
-                
-                // 没有打开时候
                 if (xOffset > 0) {
                     // 正常的缩小和向右边移动
-                    
                     // left
-                    CGAffineTransform leftScaleTransform = CGAffineTransformScale(leftCloseTransfrom, scaleOffset - 0.05, scaleOffset - 0.05);
-                    
-                    CGAffineTransform leftPanGestureTransfrom = CGAffineTransformTranslate(leftScaleTransform, xOffset, 0);
+                    CGAffineTransform leftScaleTransform = CGAffineTransformScale(menuCloseTransfrom, scaleOffset, scaleOffset);
+                    CGAffineTransform leftPanGestureTransfrom = CGAffineTransformTranslate(leftScaleTransform, xOffset * 0.9, 0);
                     self.menuViewController.view.transform = leftPanGestureTransfrom;
                     
                     // main
@@ -129,14 +141,18 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
                     CGAffineTransform mainPanGestureTransfrom = CGAffineTransformTranslate(mainScaleTransfrom, xOffset, 0);
                     self.containerView.transform = mainPanGestureTransfrom;
                     
+                    // 过度的view
+                    CGFloat widthOffset = self.view.bounds.size.width / (UIDeviceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation]) ? 4 : 3);
+                    float alphaOffset = (translation.x + widthOffset) / self.view.bounds.size.width;
+                    self.closeOverlayView.alpha = alphaOffset;
+                    self.closeOverlayView.transform = mainPanGestureTransfrom;
+                    
                 } else if (xOffset < 0) {
-                    // 不正常 的放大和向左边移动
+                    // 不正常的放大和向左边移动
                 }
-                
                 
             } else {
                 CGFloat xOffset = translation.x * 0.88;
-                
                 CGFloat width = 520.5;
                 
                 float scaleOffset = (1.0 - (xOffset / width));
@@ -144,15 +160,23 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
                 // 打开的时候
                 if (xOffset > 0) {
                     // 不正常的缩小和向右边移动
+                    
                 } else if (xOffset < 0) {
                     // 正常的放大和向左边移动
+                    // left
+                    self.menuViewController.view.transform = CGAffineTransformTranslate(CGAffineTransformScale(CGAffineTransformIdentity, scaleOffset, scaleOffset), xOffset * 0.75, 0);
+                    
+                    // main
                     CGAffineTransform originTransfrom = originScaleTransfrom;
                     CGAffineTransform scaleTransform = CGAffineTransformScale(originTransfrom, scaleOffset, scaleOffset);
                     CGAffineTransform openTransfrom = CGAffineTransformTranslate(scaleTransform, xOffset * 0.67, 0);
                     self.containerView.transform = openTransfrom;
                     
-                    self.menuViewController.view.transform = CGAffineTransformTranslate(CGAffineTransformScale(CGAffineTransformIdentity, scaleOffset, scaleOffset), xOffset * 0.67, 0);
-                    
+                    // 过度的view
+                    CGFloat widthOffset = self.view.bounds.size.width / (UIDeviceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation]) ? 4 : 3);
+                    float alphaOffset = (1.0 - (-translation.x + widthOffset) / self.view.bounds.size.width);
+                    self.closeOverlayView.alpha = alphaOffset;
+                    self.closeOverlayView.transform = openTransfrom;
                 }
                 
             }
@@ -162,83 +186,38 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
         case UIGestureRecognizerStateCancelled:
         case UIGestureRecognizerStateEnded: {
             CGFloat velocityX = [panGesture velocityInView:panGesture.view].x;
-            if (!self.open) {
-                // 还没有打开
-                if (velocityX > 0) {
-                    // 打开
-                    [UIView animateWithDuration:0.5 animations:^{
-                        CGAffineTransform scaleTranfrom = CGAffineTransformTranslate(CGAffineTransformIdentity, 190, 0);
-                        CGAffineTransform openTransfrom = CGAffineTransformScale(scaleTranfrom, self.zoomScale, self.zoomScale);
-                        originScaleTransfrom = openTransfrom;
-                        self.containerView.transform = openTransfrom;
-                        
-                        self.menuViewController.view.transform = CGAffineTransformIdentity;
-                    } completion:^(BOOL finished) {
-                        self.open = finished;
-                    }];
-                } else {
-                    // 还原
-                    [UIView animateWithDuration:0.5 animations:^{
-                        self.containerView.transform = CGAffineTransformIdentity;
-                        self.menuViewController.view.transform = leftCloseTransfrom;
-                    } completion:^(BOOL finished) {
-                        self.open = !finished;
-                    }];
-                }
-                
-            } else {
-                // 已经打开了
-                if (velocityX > 0) {
-                    // 还原打开状态
-                    [UIView animateWithDuration:0.5 animations:^{
-                        CGAffineTransform scaleTranfrom = CGAffineTransformTranslate(CGAffineTransformIdentity, 178, 0);
-                        CGAffineTransform openTransfrom = CGAffineTransformScale(scaleTranfrom, self.zoomScale, self.zoomScale);
-                        originScaleTransfrom = openTransfrom;
-                        self.containerView.transform = openTransfrom;
-                        
-                        self.menuViewController.view.transform = CGAffineTransformIdentity;
-                    } completion:^(BOOL finished) {
-                        self.open = finished;
-                    }];
-                    
-                } else if (velocityX < 0) {
-                    // 关闭left
-                    [UIView animateWithDuration:0.5 animations:^{
-                        self.containerView.transform = CGAffineTransformIdentity;
-                        self.menuViewController.view.transform = leftCloseTransfrom;
-                    } completion:^(BOOL finished) {
-                        self.open = !finished;
-                    }];
-                }
-            }
             
-            /*
-            if (velocityX < 0) {
-                // 还原
-                
-                [UIView animateWithDuration:0.5 animations:^{
-                    self.containerView.transform = CGAffineTransformIdentity;
-                    self.menuViewController.view.transform = leftCloseTransfrom;
-                } completion:^(BOOL finished) {
-                    self.open = !finished;
-                }];
-                
+            CGFloat mainViewScale = self.containerView.xscale;
+            
+            if (self.open) {
+                // 已经打开了
+                // 1、我只要判断滑动距离为
+                if (velocityX <= 0) {
+                    if (mainViewScale >= (1.0 - self.zoomScale) / 3.8 + self.zoomScale) {
+                        self.open = YES;
+                        [self closeMenuAnimated:YES completion:NULL];
+                    } else {
+                        self.open = NO;
+                        [self openMenuAnimated:YES completion:NULL];
+                    }
+                } else {
+                    self.open = NO;
+                    [self openMenuAnimated:YES completion:NULL];
+                }
             } else {
-                
-                // 打开
-                [UIView animateWithDuration:0.5 animations:^{
-                    CGAffineTransform scaleTranfrom = CGAffineTransformTranslate(CGAffineTransformIdentity, 178, 0);
-                    CGAffineTransform openTransfrom = CGAffineTransformScale(scaleTranfrom, self.zoomScale, self.zoomScale);
-                    originScaleTransfrom = openTransfrom;
-                    self.containerView.transform = openTransfrom;
-                    
-                    self.menuViewController.view.transform = CGAffineTransformIdentity;
-                } completion:^(BOOL finished) {
-                    self.open = finished;
-                }];
-                
+                if (velocityX >= 0) {
+                    if (mainViewScale <= (1.0 - self.zoomScale) / 1.2 + self.zoomScale) {
+                        self.open = NO;
+                        [self openMenuAnimated:YES completion:NULL];
+                    } else {
+                        self.open = YES;
+                        [self closeMenuAnimated:YES completion:NULL];
+                    }
+                } else {
+                    self.open = YES;
+                    [self closeMenuAnimated:YES completion:NULL];
+                }
             }
-            */
             break;
         }
         default:
@@ -272,17 +251,31 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
 
 - (CGAffineTransform)closeTransformForMenuView
 {
-    CGFloat transformSize = 1.0f + (1.0f * self.zoomScale);
-    CGAffineTransform transform = CGAffineTransformScale(self.menuViewController.view.transform, transformSize, transformSize);
-    leftCloseTransfrom = CGAffineTransformTranslate(transform, -(CGRectGetMidX(self.mainViewController.view.bounds)) - self.edgeOffset.horizontal, -self.edgeOffset.vertical);
-    return leftCloseTransfrom;
+    CGAffineTransform originTransfrom = self.menuViewController.view.transform;
+    CGFloat mainMidX = CGRectGetMidX(self.mainViewController.view.bounds);
+    CGFloat menuEdgeOffsetHorizontal = self.edgeOffset.horizontal;
+    CGFloat menuEdgeOffsetVertical = self.edgeOffset.vertical;
+    
+    CGFloat tx;
+    if (originTransfrom.tx != 0) {
+        tx = -menuCloseTransfrom.tx + originTransfrom.tx;
+    } else {
+        tx = (mainMidX + menuEdgeOffsetHorizontal);
+    }
+    
+    CGFloat transformSize = (1.0f + (1.0f * self.zoomScale)) / self.menuViewController.view.transform.a;
+    CGAffineTransform transform = CGAffineTransformScale(originTransfrom, transformSize, transformSize);
+    CGAffineTransform tempMenuCloseTransfrom = CGAffineTransformTranslate(transform, -tx, -menuEdgeOffsetVertical);
+    return tempMenuCloseTransfrom;
 }
 
 - (CGAffineTransform)openTransformForView:(UIView *)view
 {
-    CGFloat transformSize = self.zoomScale;
-    CGAffineTransform newTransform = CGAffineTransformTranslate(view.transform, CGRectGetMidX(self.mainViewController.view.bounds) + self.edgeOffset.horizontal, self.edgeOffset.vertical);
-    return CGAffineTransformScale(newTransform, transformSize, transformSize);
+    CGFloat originXScale = view.xscale;
+    CGFloat transformSize = (self.zoomScale / originXScale);
+    CGAffineTransform newTransform = CGAffineTransformTranslate(view.transform, CGRectGetMidX(self.mainViewController.view.bounds) + self.edgeOffset.horizontal - view.tx, self.edgeOffset.vertical);
+    originScaleTransfrom = CGAffineTransformScale(newTransform, transformSize, transformSize);
+    return originScaleTransfrom;
 }
 
 - (void)openMenuAnimated:(BOOL)animated completion:(void (^)(BOOL finished))completion
@@ -295,11 +288,13 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     void (^openMenuBlock)(void) = ^{
         self.menuViewController.view.transform = CGAffineTransformIdentity;
         self.containerView.transform = [self openTransformForView:self.containerView];
+        
+        self.closeOverlayView.transform = [self openTransformForView:self.closeOverlayView];
+        self.closeOverlayView.alpha = 1.0;
     };
     
     void (^openCompleteBlock)(BOOL) = ^(BOOL finished) {
         if (finished) {
-            [self addOverlayButtonToMainViewController];
         }
         
         if (completion) {
@@ -330,11 +325,12 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     }
     self.open = NO;
     
-    [self removeOverlayButtonFromMainViewController];
-    
     void (^closeMenuBlock)(void) = ^{
         self.menuViewController.view.transform = [self closeTransformForMenuView];
         self.containerView.transform = CGAffineTransformIdentity;
+        
+        self.closeOverlayView.transform = CGAffineTransformIdentity;
+        self.closeOverlayView.alpha = 0.;
     };
     
     void (^closeCompleteBlock)(BOOL) = ^(BOOL finished) {
@@ -390,22 +386,26 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     }
     
     [self addShadowToViewController:incomingViewController];
-    [self addViewController:incomingViewController];
     [self.containerView addSubview:incomingViewController.view];
 
     incomingViewController.view.frame = self.containerView.bounds;
     incomingViewController.view.transform = CGAffineTransformTranslate(incomingViewController.view.transform, outgoingStartX, 0.0f);
     
     void (^swapChangeBlock)(void) = ^{
+        outgoingViewController.view.transform = CGAffineTransformMakeScale(0.85, 0.85);
+        overlayView.transform = CGAffineTransformMakeScale(0.85, 0.85);
+        
         incomingViewController.view.transform = CGAffineTransformIdentity;
     };
     
     void (^finishedChangeBlock)(BOOL finished) = ^(BOOL finished) {
+        [self addViewController:incomingViewController];
+        
         [outgoingViewController removeFromParentViewController];
+        outgoingViewController.view.transform = CGAffineTransformIdentity;
         [outgoingViewController.view removeFromSuperview];
         [outgoingViewController didMoveToParentViewController:nil];
         [overlayView removeFromSuperview];
-        [self.closeOverlayButton removeFromSuperview];
         self.open = NO;
     };
     
@@ -450,45 +450,6 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
         mainLayer.shadowOpacity = 0.6f;
         mainLayer.shadowRadius = 10.0f;
     }
-}
-
-#pragma mark - Overlay button management
-
-- (void)addOverlayButtonToMainViewController
-{
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    button.accessibilityLabel = self.closeOverlayAccessibilityLabel;
-    button.accessibilityHint = self.closeOverlayAccessibilityHint;
-    button.backgroundColor = [UIColor clearColor];
-    button.opaque = NO;
-    button.frame = self.containerView.frame;
-    
-    [button addTarget:self action:@selector(closeButtonTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
-    [button addTarget:self action:@selector(closeButtonTouchedDown) forControlEvents:UIControlEventTouchDown];
-    [button addTarget:self action:@selector(closeButtonTouchUpOutside) forControlEvents:UIControlEventTouchUpOutside];
-    
-    [self.view addSubview:button];
-    self.closeOverlayButton = button;
-}
-
-- (void)removeOverlayButtonFromMainViewController
-{
-    [self.closeOverlayButton removeFromSuperview];
-}
-
-- (void)closeButtonTouchUpInside
-{
-    [self closeMenuAnimated:YES completion:nil];
-}
-
-- (void)closeButtonTouchedDown
-{
-    self.closeOverlayButton.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.4];
-}
-
-- (void)closeButtonTouchUpOutside
-{
-    self.closeOverlayButton.backgroundColor = [UIColor clearColor];
 }
 
 @end
