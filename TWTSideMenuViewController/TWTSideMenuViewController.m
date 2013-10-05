@@ -29,7 +29,12 @@ static NSTimeInterval const kDefaultAnimationDuration = 0.4;
 static NSTimeInterval const kDefaultSwapAnimationDuration = 0.45;
 static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
 
-@interface TWTSideMenuViewController ()
+@interface TWTSideMenuViewController () {
+    CGAffineTransform leftCloseTransfrom;
+    CGAffineTransform mainOpenTransfrom;
+    
+    CGAffineTransform originScaleTransfrom;
+}
 
 @property (nonatomic, strong) UIButton *closeOverlayButton;
 @property (nonatomic, strong) UIView *containerView;
@@ -75,6 +80,9 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
 {
     [super viewDidLoad];
     
+    UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureHandle:)];
+    [self.view addGestureRecognizer:panGesture];
+    
     self.menuViewController.view.frame = self.view.bounds;
     [self.view addSubview:self.menuViewController.view];
     
@@ -84,6 +92,97 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     [self.view addSubview:self.containerView];
     
     self.menuViewController.view.transform = [self closeTransformForMenuView];
+}
+
+#pragma mark - UIGesture
+
+- (void)panGestureHandle:(UIPanGestureRecognizer *)panGesture {
+    UIGestureRecognizerState state = panGesture.state;
+    
+    CGPoint translation = [panGesture translationInView:panGesture.view];
+    
+    switch (state) {
+        case UIGestureRecognizerStateBegan:
+        case UIGestureRecognizerStateChanged: {
+            CGFloat xOffset = translation.x;
+            
+            float scaleOffset = (1.0 - ((xOffset) / self.view.bounds.size.width));
+            
+            if (scaleOffset >= self.zoomScale && scaleOffset <= (2.0 - self.zoomScale)) {
+                if (self.isOpen) {
+                    CGAffineTransform originTransfrom = originScaleTransfrom;
+                    CGAffineTransform scaleTransform = CGAffineTransformScale(originTransfrom, scaleOffset, scaleOffset);
+                    CGAffineTransform openTransfrom = CGAffineTransformTranslate(scaleTransform, xOffset, 0);
+                    self.containerView.transform = openTransfrom;
+                    
+                    self.menuViewController.view.transform = CGAffineTransformTranslate(CGAffineTransformScale(CGAffineTransformIdentity, scaleOffset, scaleOffset), xOffset, 0);
+                } else {
+                    
+                    
+                    
+                    //main
+                    CGAffineTransform mainPanTransform = CGAffineTransformScale(CGAffineTransformIdentity, scaleOffset, scaleOffset);
+                    
+                    // left
+                    
+                    CGAffineTransform leftPanTransform = CGAffineTransformScale(leftCloseTransfrom, scaleOffset, scaleOffset);
+                    
+                    CGAffineTransform translationTransfrom = CGAffineTransformTranslate(leftPanTransform, xOffset, 0);
+                    self.menuViewController.view.transform = translationTransfrom;
+                    
+                    self.containerView.transform = CGAffineTransformTranslate(mainPanTransform, xOffset, 0);
+                }
+            } else if (xOffset < 300) {
+                
+                if (self.open) {
+                    if (xOffset > -178) {
+                        CGAffineTransform originTransfrom = originScaleTransfrom;
+                        CGAffineTransform scaleTransform = CGAffineTransformScale(originTransfrom, scaleOffset, scaleOffset);
+                        CGAffineTransform openTransfrom = CGAffineTransformTranslate(scaleTransform, xOffset, 0);
+                        self.containerView.transform = openTransfrom;
+                    }
+                } else {
+                    
+                    CGAffineTransform panTransform = CGAffineTransformScale(CGAffineTransformIdentity, self.zoomScale, self.zoomScale);
+                    self.containerView.transform = CGAffineTransformTranslate(panTransform, xOffset, 0);
+                }
+                
+            }
+            
+            break;
+        }
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateEnded: {
+            if ([panGesture velocityInView:panGesture.view].x < 0) {
+                // 还原
+                
+                [UIView animateWithDuration:0.5 animations:^{
+                    self.containerView.transform = CGAffineTransformIdentity;
+                    self.menuViewController.view.transform = leftCloseTransfrom;
+                } completion:^(BOOL finished) {
+                    self.open = !finished;
+                }];
+                
+            } else {
+                
+                // 打开
+                [UIView animateWithDuration:0.5 animations:^{
+                    CGAffineTransform scaleTranfrom = CGAffineTransformTranslate(CGAffineTransformIdentity, 178, 0);
+                    CGAffineTransform openTransfrom = CGAffineTransformScale(scaleTranfrom, self.zoomScale, self.zoomScale);
+                    originScaleTransfrom = openTransfrom;
+                    self.containerView.transform = openTransfrom;
+                    
+                    self.menuViewController.view.transform = CGAffineTransformIdentity;
+                } completion:^(BOOL finished) {
+                    self.open = finished;
+                }];
+                
+            }
+            break;
+        }
+        default:
+            break;
+    }
 }
 
 #pragma mark - Status Bar management
@@ -114,7 +213,8 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
 {
     CGFloat transformSize = 1.0f + (1.0f * self.zoomScale);
     CGAffineTransform transform = CGAffineTransformScale(self.menuViewController.view.transform, transformSize, transformSize);
-    return CGAffineTransformTranslate(transform, -(CGRectGetMidX(self.mainViewController.view.bounds)) - self.edgeOffset.horizontal, -self.edgeOffset.vertical);
+    leftCloseTransfrom = CGAffineTransformTranslate(transform, -(CGRectGetMidX(self.mainViewController.view.bounds)) - self.edgeOffset.horizontal, -self.edgeOffset.vertical);
+    return leftCloseTransfrom;
 }
 
 - (CGAffineTransform)openTransformForView:(UIView *)view
