@@ -104,56 +104,116 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     switch (state) {
         case UIGestureRecognizerStateBegan:
         case UIGestureRecognizerStateChanged: {
-            CGFloat xOffset = translation.x;
             
-            float scaleOffset = (1.0 - ((xOffset) / self.view.bounds.size.width));
             
-            if (scaleOffset >= self.zoomScale && scaleOffset <= (2.0 - self.zoomScale)) {
-                if (self.isOpen) {
-                    CGAffineTransform originTransfrom = originScaleTransfrom;
-                    CGAffineTransform scaleTransform = CGAffineTransformScale(originTransfrom, scaleOffset, scaleOffset);
-                    CGAffineTransform openTransfrom = CGAffineTransformTranslate(scaleTransform, xOffset, 0);
-                    self.containerView.transform = openTransfrom;
-                    
-                    self.menuViewController.view.transform = CGAffineTransformTranslate(CGAffineTransformScale(CGAffineTransformIdentity, scaleOffset, scaleOffset), xOffset, 0);
-                } else {
-                    
-                    
-                    
-                    //main
-                    CGAffineTransform mainPanTransform = CGAffineTransformScale(CGAffineTransformIdentity, scaleOffset, scaleOffset);
+            if (!self.open) {
+                CGFloat xOffset = translation.x * 0.9;
+                
+                CGFloat width = 857.5;
+                
+                float scaleOffset = (1.0 - (xOffset / width));
+                
+                
+                // 没有打开时候
+                if (xOffset > 0) {
+                    // 正常的缩小和向右边移动
                     
                     // left
+                    CGAffineTransform leftScaleTransform = CGAffineTransformScale(leftCloseTransfrom, scaleOffset - 0.05, scaleOffset - 0.05);
                     
-                    CGAffineTransform leftPanTransform = CGAffineTransformScale(leftCloseTransfrom, scaleOffset, scaleOffset);
+                    CGAffineTransform leftPanGestureTransfrom = CGAffineTransformTranslate(leftScaleTransform, xOffset, 0);
+                    self.menuViewController.view.transform = leftPanGestureTransfrom;
                     
-                    CGAffineTransform translationTransfrom = CGAffineTransformTranslate(leftPanTransform, xOffset, 0);
-                    self.menuViewController.view.transform = translationTransfrom;
+                    // main
+                    CGAffineTransform mainScaleTransfrom = CGAffineTransformScale(CGAffineTransformIdentity, scaleOffset, scaleOffset);
+                    CGAffineTransform mainPanGestureTransfrom = CGAffineTransformTranslate(mainScaleTransfrom, xOffset, 0);
+                    self.containerView.transform = mainPanGestureTransfrom;
                     
-                    self.containerView.transform = CGAffineTransformTranslate(mainPanTransform, xOffset, 0);
+                } else if (xOffset < 0) {
+                    // 不正常 的放大和向左边移动
                 }
-            } else if (xOffset < 300) {
                 
-                if (self.open) {
-                    if (xOffset > -178) {
-                        CGAffineTransform originTransfrom = originScaleTransfrom;
-                        CGAffineTransform scaleTransform = CGAffineTransformScale(originTransfrom, scaleOffset, scaleOffset);
-                        CGAffineTransform openTransfrom = CGAffineTransformTranslate(scaleTransform, xOffset, 0);
-                        self.containerView.transform = openTransfrom;
-                    }
-                } else {
+                
+            } else {
+                CGFloat xOffset = translation.x * 0.88;
+                
+                CGFloat width = 520.5;
+                
+                float scaleOffset = (1.0 - (xOffset / width));
+                
+                // 打开的时候
+                if (xOffset > 0) {
+                    // 不正常的缩小和向右边移动
+                } else if (xOffset < 0) {
+                    // 正常的放大和向左边移动
+                    CGAffineTransform originTransfrom = originScaleTransfrom;
+                    CGAffineTransform scaleTransform = CGAffineTransformScale(originTransfrom, scaleOffset, scaleOffset);
+                    CGAffineTransform openTransfrom = CGAffineTransformTranslate(scaleTransform, xOffset * 0.67, 0);
+                    self.containerView.transform = openTransfrom;
                     
-                    CGAffineTransform panTransform = CGAffineTransformScale(CGAffineTransformIdentity, self.zoomScale, self.zoomScale);
-                    self.containerView.transform = CGAffineTransformTranslate(panTransform, xOffset, 0);
+                    self.menuViewController.view.transform = CGAffineTransformTranslate(CGAffineTransformScale(CGAffineTransformIdentity, scaleOffset, scaleOffset), xOffset * 0.67, 0);
+                    
                 }
                 
             }
-            
+
             break;
         }
         case UIGestureRecognizerStateCancelled:
         case UIGestureRecognizerStateEnded: {
-            if ([panGesture velocityInView:panGesture.view].x < 0) {
+            CGFloat velocityX = [panGesture velocityInView:panGesture.view].x;
+            if (!self.open) {
+                // 还没有打开
+                if (velocityX > 0) {
+                    // 打开
+                    [UIView animateWithDuration:0.5 animations:^{
+                        CGAffineTransform scaleTranfrom = CGAffineTransformTranslate(CGAffineTransformIdentity, 190, 0);
+                        CGAffineTransform openTransfrom = CGAffineTransformScale(scaleTranfrom, self.zoomScale, self.zoomScale);
+                        originScaleTransfrom = openTransfrom;
+                        self.containerView.transform = openTransfrom;
+                        
+                        self.menuViewController.view.transform = CGAffineTransformIdentity;
+                    } completion:^(BOOL finished) {
+                        self.open = finished;
+                    }];
+                } else {
+                    // 还原
+                    [UIView animateWithDuration:0.5 animations:^{
+                        self.containerView.transform = CGAffineTransformIdentity;
+                        self.menuViewController.view.transform = leftCloseTransfrom;
+                    } completion:^(BOOL finished) {
+                        self.open = !finished;
+                    }];
+                }
+                
+            } else {
+                // 已经打开了
+                if (velocityX > 0) {
+                    // 还原打开状态
+                    [UIView animateWithDuration:0.5 animations:^{
+                        CGAffineTransform scaleTranfrom = CGAffineTransformTranslate(CGAffineTransformIdentity, 178, 0);
+                        CGAffineTransform openTransfrom = CGAffineTransformScale(scaleTranfrom, self.zoomScale, self.zoomScale);
+                        originScaleTransfrom = openTransfrom;
+                        self.containerView.transform = openTransfrom;
+                        
+                        self.menuViewController.view.transform = CGAffineTransformIdentity;
+                    } completion:^(BOOL finished) {
+                        self.open = finished;
+                    }];
+                    
+                } else if (velocityX < 0) {
+                    // 关闭left
+                    [UIView animateWithDuration:0.5 animations:^{
+                        self.containerView.transform = CGAffineTransformIdentity;
+                        self.menuViewController.view.transform = leftCloseTransfrom;
+                    } completion:^(BOOL finished) {
+                        self.open = !finished;
+                    }];
+                }
+            }
+            
+            /*
+            if (velocityX < 0) {
                 // 还原
                 
                 [UIView animateWithDuration:0.5 animations:^{
@@ -178,6 +238,7 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
                 }];
                 
             }
+            */
             break;
         }
         default:

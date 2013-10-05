@@ -32,7 +32,7 @@
     self.sideMenuViewController = [[TWTSideMenuViewController alloc] initWithMenuViewController:self.menuViewController mainViewController:[[UINavigationController alloc] initWithRootViewController:self.mainViewController]];
     self.sideMenuViewController.shadowColor = [UIColor blackColor];
     self.sideMenuViewController.edgeOffset = (UIOffset) { .horizontal = 18.0f };
-    self.sideMenuViewController.zoomScale = 0.5634f;
+    self.sideMenuViewController.zoomScale = 0.65f;
     self.window.rootViewController = self.sideMenuViewController;
     
     self.window.backgroundColor = [UIColor whiteColor];
