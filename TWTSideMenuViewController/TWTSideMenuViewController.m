@@ -25,6 +25,8 @@
 #import <objc/runtime.h>
 #import "UIView-Transform.h"
 
+
+
 static NSTimeInterval const kDefaultAnimationDelayDuration = 0.2;
 static NSTimeInterval const kDefaultAnimationDuration = 0.5;
 static NSTimeInterval const kDefaultSwapAnimationDuration = 0.55;
@@ -36,13 +38,23 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.45;
     
     CGAffineTransform originScaleTransfrom;
 }
-
+@property (nonatomic, assign, readwrite) XHDrawerSide openSide;
 @property (nonatomic, strong) UIView *closeOverlayView;
 @property (nonatomic, strong) UIView *containerView;
-
+@property (nonatomic, strong) UIView * childControllerContainerView;
 @end
 
 @implementation TWTSideMenuViewController
+
+- (UIView *)childControllerContainerView {
+    if(_childControllerContainerView == nil){
+        _childControllerContainerView = [[UIView alloc] initWithFrame:self.view.bounds];
+        [_childControllerContainerView setBackgroundColor:[UIColor blackColor]];
+        [_childControllerContainerView setAutoresizingMask:UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth];
+        [self.view addSubview:_childControllerContainerView];
+    }
+    return _childControllerContainerView;
+}
 
 #pragma mark - Life Cycle
 
@@ -59,10 +71,10 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.45;
 {
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
-        _menuViewController = menuViewController;
-        _mainViewController = mainViewController;
-        
         [self commonInitialization];
+        [self setCenterViewController:mainViewController];
+        
+        [self setLeftDrawerViewController:menuViewController];
     }
     return self;
 }
@@ -70,38 +82,196 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.45;
 - (void)commonInitialization
 {
     self.animationDuration = kDefaultAnimationDuration;
-    
-    [self addViewController:self.menuViewController];
-    [self addViewController:self.mainViewController];
+    self.edgeOffset = UIOffsetMake(18, 0);
+    self.zoomScale = 0.65;
+}
+
+#pragma mark - 状态设置
+
+-(void)setOpenSide:(XHDrawerSide)openSide{
+    if(_openSide != openSide){
+        _openSide = openSide;
+        if(openSide == XHDrawerSideNone){
+            [self.menuViewController.view setHidden:YES];
+        }
+    }
 }
 
 #pragma mark - UIViewController
+
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+}
+
+-(void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+}
+
+-(void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+}
+
+-(void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
+    [self.childControllerContainerView setBackgroundColor:[UIColor blackColor]];
+    
     UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureHandle:)];
     [self.view addGestureRecognizer:panGesture];
+}
+
+#pragma mark - Left Right ViewController manager
+
+-(void)setRightDrawerViewController:(UIViewController *)rightDrawerViewController{
+    [self setDrawerViewController:rightDrawerViewController forSide:XHDrawerSideRight];
+}
+
+-(void)setLeftDrawerViewController:(UIViewController *)leftDrawerViewController{
+    [self setDrawerViewController:leftDrawerViewController forSide:XHDrawerSideLeft];
+}
+
+- (void)setDrawerViewController:(UIViewController *)viewController forSide:(XHDrawerSide)drawerSide{
+    NSParameterAssert(drawerSide != XHDrawerSideNone);
     
-    self.menuViewController.view.frame = self.view.bounds;
-    [self.view addSubview:self.menuViewController.view];
+    UIViewController *currentSideViewController = [self sideDrawerViewControllerForSide:drawerSide];
+    if (currentSideViewController != nil) {
+        [currentSideViewController beginAppearanceTransition:NO animated:NO];
+        [currentSideViewController.view removeFromSuperview];
+        [currentSideViewController endAppearanceTransition];
+        [currentSideViewController removeFromParentViewController];
+    }
     
-    self.containerView = [[UIView alloc] initWithFrame:self.view.bounds];
-    self.mainViewController.view.frame = self.containerView.bounds;
+    
+    UIViewAutoresizing autoResizingMask = 0;
+    if (drawerSide == XHDrawerSideLeft) {
+        _menuViewController = viewController;
+        autoResizingMask = UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleHeight;
+    }
+    else if(drawerSide == XHDrawerSideRight){
+        _menuViewController = viewController;
+        autoResizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleHeight;
+    }
+    
+    if(viewController){
+        [self addChildViewController:viewController];
+        
+        if ((self.openSide == drawerSide) &&
+            [self.childControllerContainerView.subviews containsObject:self.containerView]){
+            [self.childControllerContainerView insertSubview:viewController.view belowSubview:self.containerView];
+            [viewController beginAppearanceTransition:YES animated:NO];
+            [viewController endAppearanceTransition];
+        } else {
+            [self.childControllerContainerView addSubview:_menuViewController.view];
+            [self.childControllerContainerView sendSubviewToBack:_menuViewController.view];
+        }
+        [viewController didMoveToParentViewController:self];
+        [viewController.view setFrame:self.childControllerContainerView.bounds];
+        viewController.view.autoresizingMask = autoResizingMask;
+        viewController.view.transform = [self closeTransformForMenuView];
+        menuCloseTransfrom = viewController.view.transform;
+    }
+    
+}
+
+-(void)prepareToPresentDrawer:(XHDrawerSide)drawer animated:(BOOL)animated {
+    XHDrawerSide drawerToHide = XHDrawerSideNone;
+    if(drawer == XHDrawerSideLeft){
+        drawerToHide = XHDrawerSideRight;
+    }
+    else if(drawer == XHDrawerSideRight){
+        drawerToHide = XHDrawerSideLeft;
+    }
+    
+    UIViewController * sideDrawerViewControllerToPresent = [self sideDrawerViewControllerForSide:drawer];
+    UIViewController * sideDrawerViewControllerToHide = [self sideDrawerViewControllerForSide:drawerToHide];
+    
+    [self.childControllerContainerView sendSubviewToBack:sideDrawerViewControllerToHide.view];
+    
+//    [sideDrawerViewControllerToHide.view setHidden:YES];
+//    [sideDrawerViewControllerToPresent.view setHidden:NO];
+//    [sideDrawerViewControllerToPresent.view setFrame:self.childControllerContainerView.bounds];
+    
+    [sideDrawerViewControllerToPresent beginAppearanceTransition:YES animated:animated];
+}
+
+#pragma mark - sideDrawerViewController manager
+
+-(UIViewController*)sideDrawerViewControllerForSide:(XHDrawerSide)drawerSide{
+    UIViewController * sideDrawerViewController = nil;
+    if(drawerSide != XHDrawerSideNone){
+        sideDrawerViewController = [self childViewControllerForSide:drawerSide];
+    }
+    return sideDrawerViewController;
+}
+
+-(UIViewController*)childViewControllerForSide:(XHDrawerSide)drawerSide{
+    UIViewController * childViewController = nil;
+    switch (drawerSide) {
+        case XHDrawerSideLeft:
+            childViewController = self.menuViewController;
+            break;
+        case XHDrawerSideRight:
+            childViewController = nil;
+            break;
+        case XHDrawerSideNone:
+            childViewController = self.mainViewController;
+            break;
+    }
+    return childViewController;
+}
+
+
+#pragma mark - Main ViewController manager
+
+-(void)setCenterViewController:(UIViewController *)centerViewController{
+    [self setCenterViewController:centerViewController animated:NO];
+}
+
+-(void)setCenterViewController:(UIViewController *)centerViewController animated:(BOOL)animated {
+    if(_containerView == nil){
+        _containerView = [[UIView alloc] initWithFrame:self.view.bounds];
+        [self.childControllerContainerView addSubview:self.containerView];
+        
+        if (!_closeOverlayView) {
+            _closeOverlayView = [[UIView alloc] initWithFrame:self.view.bounds];
+            self.closeOverlayView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.6];
+            self.closeOverlayView.alpha = 0.;
+            [self.childControllerContainerView addSubview:self.closeOverlayView];
+            
+            UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureHandle:)];
+            [self.closeOverlayView addGestureRecognizer:tapGesture];
+        }
+    }
+    
+    UIViewController * oldCenterViewController = self.mainViewController;
+    if(oldCenterViewController){
+        if(animated == NO){
+            [oldCenterViewController beginAppearanceTransition:NO animated:NO];
+        }
+        [oldCenterViewController removeFromParentViewController];
+        [oldCenterViewController.view removeFromSuperview];
+        if(animated == NO){
+            [oldCenterViewController endAppearanceTransition];
+        }
+    }
+    
+    _mainViewController = centerViewController;
+    
+    [self addChildViewController:self.mainViewController];
+    [self.mainViewController.view setFrame:self.containerView.bounds];
     [self.containerView addSubview:self.mainViewController.view];
-    [self.view addSubview:self.containerView];
+    [self.mainViewController.view setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
     
-    self.menuViewController.view.transform = [self closeTransformForMenuView];
-    menuCloseTransfrom = self.menuViewController.view.transform;
-    
-    _closeOverlayView = [[UIView alloc] initWithFrame:self.containerView.bounds];
-    self.closeOverlayView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.6];
-    self.closeOverlayView.alpha = 0.;
-    [self.view addSubview:self.closeOverlayView];
-    
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureHandle:)];
-    [self.closeOverlayView addGestureRecognizer:tapGesture];
+    if(animated == NO) {
+        [self.mainViewController beginAppearanceTransition:YES animated:NO];
+        [self.mainViewController endAppearanceTransition];
+        [self.mainViewController didMoveToParentViewController:self];
+    }
 }
 
 #pragma mark - UIGesture
@@ -119,6 +289,12 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.45;
     
     switch (state) {
         case UIGestureRecognizerStateBegan:
+            if (!self.open) {
+                // 当Menu关闭的时候
+                [self prepareToPresentDrawer:XHDrawerSideLeft animated:YES];
+            } else {
+                [self.menuViewController beginAppearanceTransition:NO animated:YES];
+            }
         case UIGestureRecognizerStateChanged: {
             
             
@@ -131,6 +307,8 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.45;
                 
                 if (xOffset > 0) {
                     // 正常的缩小和向右边移动
+                    
+                    
                     // left
                     CGAffineTransform leftScaleTransform = CGAffineTransformScale(menuCloseTransfrom, scaleOffset, scaleOffset);
                     CGAffineTransform leftPanGestureTransfrom = CGAffineTransformTranslate(leftScaleTransform, xOffset * 0.9, 0);
@@ -178,9 +356,7 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.45;
                     self.closeOverlayView.alpha = alphaOffset;
                     self.closeOverlayView.transform = openTransfrom;
                 }
-                
             }
-
             break;
         }
         case UIGestureRecognizerStateCancelled:
@@ -189,22 +365,8 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.45;
             
             CGFloat mainViewScale = self.containerView.xscale;
             
-            if (self.open) {
-                // 已经打开了
-                // 1、我只要判断滑动距离为
-                if (velocityX <= 0) {
-                    if (mainViewScale >= (1.0 - self.zoomScale) / 3.8 + self.zoomScale) {
-                        self.open = YES;
-                        [self closeMenuAnimated:YES completion:NULL];
-                    } else {
-                        self.open = NO;
-                        [self openMenuAnimated:YES completion:NULL];
-                    }
-                } else {
-                    self.open = NO;
-                    [self openMenuAnimated:YES completion:NULL];
-                }
-            } else {
+            if (!self.open) {
+                // 没有打开
                 if (velocityX >= 0) {
                     if (mainViewScale <= (1.0 - self.zoomScale) / 1.2 + self.zoomScale) {
                         self.open = NO;
@@ -217,6 +379,25 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.45;
                     self.open = YES;
                     [self closeMenuAnimated:YES completion:NULL];
                 }
+                
+            } else {
+                // 已经打开了
+                // 1、我只要判断滑动距离为
+                if (velocityX <= 0) {
+                    if (mainViewScale >= (1.0 - self.zoomScale) / 3.8 + self.zoomScale) {
+                        self.open = YES;
+                        [self closeMenuAnimated:YES completion:NULL];
+                    } else {
+                        self.open = NO;
+                        [self.menuViewController beginAppearanceTransition:YES animated:YES];
+                        [self openMenuAnimated:YES completion:NULL];
+                    }
+                } else {
+                    self.open = NO;
+                    [self.menuViewController beginAppearanceTransition:YES animated:YES];
+                    [self openMenuAnimated:YES completion:NULL];
+                }
+                
             }
             break;
         }
@@ -252,7 +433,7 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.45;
 - (CGAffineTransform)closeTransformForMenuView
 {
     CGAffineTransform originTransfrom = self.menuViewController.view.transform;
-    CGFloat mainMidX = CGRectGetMidX(self.mainViewController.view.bounds);
+    CGFloat mainMidX = CGRectGetMidX(self.containerView.bounds);
     CGFloat menuEdgeOffsetHorizontal = self.edgeOffset.horizontal;
     CGFloat menuEdgeOffsetVertical = self.edgeOffset.vertical;
     
@@ -285,6 +466,14 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.45;
     }
     self.open = YES;
     
+    UIViewController * sideDrawerViewController = [self sideDrawerViewControllerForSide:XHDrawerSideLeft];
+    CGRect visibleRect = CGRectIntersection(self.childControllerContainerView.bounds,sideDrawerViewController.view.frame);
+    BOOL drawerFullyCovered = (CGRectContainsRect(self.containerView.frame, visibleRect) ||
+                               CGRectIsNull(visibleRect));
+    if(drawerFullyCovered){
+        [self prepareToPresentDrawer:XHDrawerSideLeft animated:animated];
+    }
+    
     void (^openMenuBlock)(void) = ^{
         self.menuViewController.view.transform = CGAffineTransformIdentity;
         self.containerView.transform = [self openTransformForView:self.containerView];
@@ -295,6 +484,8 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.45;
     
     void (^openCompleteBlock)(BOOL) = ^(BOOL finished) {
         if (finished) {
+            [self.menuViewController endAppearanceTransition];
+            [self updateStatusBarStyle];
         }
         
         if (completion) {
@@ -314,8 +505,6 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.45;
         openMenuBlock();
         openCompleteBlock(YES);
     }
-    
-    [self updateStatusBarStyle];
 }
 
 - (void)closeMenuAnimated:(BOOL)animated completion:(void (^)(BOOL finished))completion
@@ -324,6 +513,8 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.45;
         return;
     }
     self.open = NO;
+    
+    [self.menuViewController beginAppearanceTransition:NO animated:YES];
     
     void (^closeMenuBlock)(void) = ^{
         self.menuViewController.view.transform = [self closeTransformForMenuView];
@@ -335,6 +526,7 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.45;
     
     void (^closeCompleteBlock)(BOOL) = ^(BOOL finished) {
         if (finished) {
+            [self.menuViewController endAppearanceTransition];
             [self updateStatusBarStyle];
         }
         
@@ -387,13 +579,14 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.45;
     
     [self addShadowToViewController:incomingViewController];
     [self.containerView addSubview:incomingViewController.view];
-
+    
     incomingViewController.view.frame = self.containerView.bounds;
-    incomingViewController.view.transform = CGAffineTransformTranslate(incomingViewController.view.transform, outgoingStartX, 0.0f);
+    CGAffineTransform incomingViewControllerScaleTransfrom = CGAffineTransformScale(incomingViewController.view.transform, 1.2, 1.2);
+    incomingViewController.view.transform = CGAffineTransformTranslate(incomingViewControllerScaleTransfrom, outgoingStartX, 0.0f);
     
     void (^swapChangeBlock)(void) = ^{
-        outgoingViewController.view.transform = CGAffineTransformMakeScale(0.85, 0.85);
-        overlayView.transform = CGAffineTransformMakeScale(0.85, 0.85);
+        outgoingViewController.view.transform = CGAffineTransformMakeScale(0.65, 0.65);
+        overlayView.transform = CGAffineTransformMakeScale(0.65, 0.65);
         
         incomingViewController.view.transform = CGAffineTransformIdentity;
     };
@@ -425,16 +618,17 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.45;
     }
     
     self.mainViewController = mainViewController;
-    self.mainViewController.sideMenuViewController = self;
 }
 
 #pragma mark - View Management
 
 - (void)addViewController:(UIViewController *)viewController
 {
-    viewController.sideMenuViewController = self;
-    [self addChildViewController:viewController];
-    [viewController didMoveToParentViewController:self];
+    if (viewController) {
+        viewController.sideMenuViewController = self;
+        [self addChildViewController:viewController];
+        [viewController didMoveToParentViewController:self];
+    }
 }
 
 #pragma mark - Shadow management
@@ -463,11 +657,14 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.45;
 
 - (TWTSideMenuViewController *)sideMenuViewController
 {
-    TWTSideMenuViewController *sideMenuController = objc_getAssociatedObject(self, @selector(sideMenuViewController));
-    if (!sideMenuController) {
-        sideMenuController = self.parentViewController.sideMenuViewController;
+    UIViewController *parentViewController = self.parentViewController;
+    while (parentViewController != nil) {
+        if([parentViewController isKindOfClass:[TWTSideMenuViewController class]]){
+            return (TWTSideMenuViewController *)parentViewController;
+        }
+        parentViewController = parentViewController.parentViewController;
     }
-    return sideMenuController;
+    return nil;
 }
 
 @end

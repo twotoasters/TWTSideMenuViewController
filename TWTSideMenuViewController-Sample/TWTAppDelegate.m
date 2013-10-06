@@ -22,20 +22,28 @@
 
 @implementation TWTAppDelegate
 
+- (TWTMenuViewController *)menuViewController {
+    if (!_menuViewController) {
+        _menuViewController = [[TWTMenuViewController alloc] init];
+    }
+    return _menuViewController;
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-
-    self.menuViewController = [[TWTMenuViewController alloc] initWithNibName:nil bundle:nil];
-    self.mainViewController = [[TWTMainViewController alloc] initWithNibName:nil bundle:nil];
-    
-    self.sideMenuViewController = [[TWTSideMenuViewController alloc] initWithMenuViewController:self.menuViewController mainViewController:[[UINavigationController alloc] initWithRootViewController:self.mainViewController]];
-    self.sideMenuViewController.shadowColor = [UIColor blackColor];
-    self.sideMenuViewController.edgeOffset = (UIOffset) { .horizontal = 18.0f };
-    self.sideMenuViewController.zoomScale = 0.65f;
-    self.window.rootViewController = self.sideMenuViewController;
-    
     self.window.backgroundColor = [UIColor whiteColor];
+    
+    
+    self.mainViewController = [[TWTMainViewController alloc] init];
+    
+    _sideMenuViewController = [[TWTSideMenuViewController alloc] initWithMenuViewController:self.menuViewController mainViewController:[[UINavigationController alloc] initWithRootViewController:self.mainViewController]];
+    _sideMenuViewController.shadowColor = [UIColor blackColor];
+    _sideMenuViewController.edgeOffset = (UIOffset) { .horizontal = 18.0f };
+    _sideMenuViewController.zoomScale = 0.65f;
+    self.window.rootViewController = _sideMenuViewController;
+    
+    
     [self.window makeKeyAndVisible];
     return YES;
 }

@@ -18,6 +18,24 @@
 
 @implementation TWTMenuViewController
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    NSLog(@"left viewDidAppear");
+}
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    NSLog(@"left viewWillAppear");
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    NSLog(@"left viewDidDisappear");
+}
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    NSLog(@"left viewWillDisappear");
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];

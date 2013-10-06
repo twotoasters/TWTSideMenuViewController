@@ -17,6 +17,24 @@ static NSString * const kTableViewCellIdentifier = @"com.twotoasters.sampleCell"
 
 @implementation TWTMainViewController
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    NSLog(@"main viewDidAppear");
+}
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    NSLog(@"main viewWillAppear");
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    NSLog(@"main viewDidDisappear");
+}
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    NSLog(@"main viewWillDisappear");
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
