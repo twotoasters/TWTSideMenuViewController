@@ -110,7 +110,7 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
         [self removeOverlayButtonFromMainViewController];
 
         [UIView animateWithDuration:duration animations:^{
-            // Effectively closes the menu and reapplies transform. This is a half measure to get around the problem of new view controllers getting pushed on to the hierarchy with out the proper height navigation.
+            // Effectively closes the menu and reapplies transform. This is a half measure to get around the problem of new view controllers getting pushed on to the hierarchy without the proper height navigation.
             self.menuViewController.view.transform = [self closeTransformForMenuView];
             self.containerView.transform = CGAffineTransformIdentity;
         }];
@@ -304,15 +304,11 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
             [self closeMenuAnimated:animated completion:nil];
         }
         
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInterval * NSEC_PER_SEC));
-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            [self transitionFromViewController:outgoingViewController
-                              toViewController:incomingViewController
-                                      duration:changeTimeInterval
-                                       options:UIViewAnimationOptionCurveEaseInOut
-                                    animations:swapChangeBlock
-                                    completion:finishedChangeBlock];
-        });
+        [UIView animateWithDuration:changeTimeInterval
+                              delay:delayInterval
+                            options:UIViewAnimationOptionCurveEaseInOut
+                         animations:swapChangeBlock
+                         completion:finishedChangeBlock];
     } else {
         swapChangeBlock();
         finishedChangeBlock(YES);
