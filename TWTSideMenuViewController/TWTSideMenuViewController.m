@@ -75,15 +75,21 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
 {
     [super viewDidLoad];
     
-    self.menuViewController.view.frame = self.view.bounds;
-    [self.view addSubview:self.menuViewController.view];
-    
+    [self addChildViewController:self.mainViewController];
     self.containerView = [[UIView alloc] initWithFrame:self.view.bounds];
+    self.containerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    
     self.mainViewController.view.frame = self.containerView.bounds;
     [self.containerView addSubview:self.mainViewController.view];
     [self.view addSubview:self.containerView];
-    
+    [self.mainViewController didMoveToParentViewController:self];
+
+    [self addChildViewController:self.menuViewController];
+    self.menuViewController.view.frame = self.view.bounds;
+    self.menuViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.view insertSubview:self.menuViewController.view belowSubview:self.containerView];
     self.menuViewController.view.transform = [self closeTransformForMenuView];
+    [self.menuViewController didMoveToParentViewController:self];
 }
 
 - (BOOL)shouldAutorotate
@@ -96,16 +102,36 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     return UIInterfaceOrientationMaskAll;
 }
 
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [self removeShadowFromViewController:self.mainViewController];
+
+    if (self.open) {
+        [self removeOverlayButtonFromMainViewController];
+
+        [UIView animateWithDuration:duration animations:^{
+            // Effectively closes the menu and reapplies transform. This is a half measure to get around the problem of new view controllers getting pushed on to the hierarchy with out the proper height navigation.
+            self.menuViewController.view.transform = [self closeTransformForMenuView];
+            self.containerView.transform = CGAffineTransformIdentity;
+        }];
+    }
+}
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-    [self closeMenuAnimated:NO completion:^(BOOL finished) {
-        self.mainViewController.view.frame = self.view.bounds;
-        [self openMenuAnimated:NO completion:nil];
-    }];
+    self.menuViewController.view.bounds = self.view.bounds;
 
-    NSLog(@"did rotate");
+    if (self.open) {
+        [UIView animateWithDuration:0.2 animations:^{
+            self.menuViewController.view.transform = CGAffineTransformIdentity;
+            self.containerView.transform = [self openTransformForView:self.containerView];
+        } completion:^(BOOL finished) {
+            [self addShadowToViewController:self.mainViewController];
+            [self addOverlayButtonToMainViewController];
+        }];
+    } else {
+        [self addShadowToViewController:self.mainViewController];
+    }
 }
 
 #pragma mark - Status Bar management
@@ -134,15 +160,15 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
 
 - (CGAffineTransform)closeTransformForMenuView
 {
-    CGFloat transformSize = 1.0f + (1.0f * self.zoomScale);
+    CGFloat transformSize = 1.0f / self.zoomScale;
     CGAffineTransform transform = CGAffineTransformScale(self.menuViewController.view.transform, transformSize, transformSize);
-    return CGAffineTransformTranslate(transform, -(CGRectGetMidX(self.mainViewController.view.bounds)) - self.edgeOffset.horizontal, -self.edgeOffset.vertical);
+    return CGAffineTransformTranslate(transform, -(CGRectGetMidX(self.containerView.bounds)) - self.edgeOffset.horizontal, -self.edgeOffset.vertical);
 }
 
 - (CGAffineTransform)openTransformForView:(UIView *)view
 {
     CGFloat transformSize = self.zoomScale;
-    CGAffineTransform newTransform = CGAffineTransformTranslate(view.transform, CGRectGetMidX(self.mainViewController.view.bounds) + self.edgeOffset.horizontal, self.edgeOffset.vertical);
+    CGAffineTransform newTransform = CGAffineTransformTranslate(view.transform, CGRectGetMidX(view.bounds) + self.edgeOffset.horizontal, self.edgeOffset.vertical);
     return CGAffineTransformScale(newTransform, transformSize, transformSize);
 }
 
@@ -152,7 +178,7 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
         return;
     }
     self.open = YES;
-    
+
     void (^openMenuBlock)(void) = ^{
         self.menuViewController.view.transform = CGAffineTransformIdentity;
         self.containerView.transform = [self openTransformForView:self.containerView];
@@ -202,7 +228,7 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
         if (finished) {
             [self updateStatusBarStyle];
         }
-        
+
         if (completion) {
             completion(finished);
         }
@@ -232,6 +258,8 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
 - (void)setMainViewController:(UIViewController *)mainViewController animated:(BOOL)animated closeMenu:(BOOL)closeMenu
 {
     UIViewController *outgoingViewController = self.mainViewController;
+    UIViewController *incomingViewController = mainViewController;
+
     UIView *overlayView = [[UIView alloc] initWithFrame:outgoingViewController.view.frame];
     overlayView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.8f];
     [self.containerView addSubview:overlayView];
@@ -240,8 +268,6 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     animation.fromValue = @0.0f;
     animation.duration = kDefaultAnimationDuration;
     [overlayView.layer addAnimation:animation forKey:@"opacity"];
-    
-    UIViewController *incomingViewController = mainViewController;
     
     CGFloat outgoingStartX = CGRectGetMaxX(outgoingViewController.view.frame);
     NSTimeInterval changeTimeInterval = kDefaultSwapAnimationDuration;
@@ -263,6 +289,8 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     };
     
     void (^finishedChangeBlock)(BOOL finished) = ^(BOOL finished) {
+        [incomingViewController didMoveToParentViewController:self];
+
         [outgoingViewController removeFromParentViewController];
         [outgoingViewController.view removeFromSuperview];
         [outgoingViewController didMoveToParentViewController:nil];
@@ -276,11 +304,15 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
             [self closeMenuAnimated:animated completion:nil];
         }
         
-        [UIView animateWithDuration:changeTimeInterval
-                              delay:delayInterval
-                            options:UIViewAnimationOptionCurveEaseInOut
-                         animations:swapChangeBlock
-                         completion:finishedChangeBlock];
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInterval * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [self transitionFromViewController:outgoingViewController
+                              toViewController:incomingViewController
+                                      duration:changeTimeInterval
+                                       options:UIViewAnimationOptionCurveEaseInOut
+                                    animations:swapChangeBlock
+                                    completion:finishedChangeBlock];
+        });
     } else {
         swapChangeBlock();
         finishedChangeBlock(YES);
@@ -311,6 +343,14 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
         mainLayer.shadowOffset = CGSizeZero;
         mainLayer.shadowOpacity = 0.6f;
         mainLayer.shadowRadius = 10.0f;
+    }
+}
+
+- (void)removeShadowFromViewController:(UIViewController *)viewController
+{
+    CALayer *mainLayer = viewController.view.layer;
+    if (mainLayer) {
+        mainLayer.shadowOpacity = 0.0f;
     }
 }
 
