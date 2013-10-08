@@ -392,6 +392,7 @@
 				GCC_PREFIX_HEADER = "TWTSideMenuViewController-Sample/TWTSideMenuViewController-Sample-Prefix.pch";
 				INFOPLIST_FILE = "TWTSideMenuViewController-Sample/TWTSideMenuViewController-Sample-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -405,6 +406,7 @@
 				GCC_PREFIX_HEADER = "TWTSideMenuViewController-Sample/TWTSideMenuViewController-Sample-Prefix.pch";
 				INFOPLIST_FILE = "TWTSideMenuViewController-Sample/TWTSideMenuViewController-Sample-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
