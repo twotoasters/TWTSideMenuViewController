@@ -51,7 +51,6 @@ Later, when you need to change what is in the main view controller's context you
 ### TODO
 
 - Find additional requirements as the library is used in additional apps. (This initial version was built to meet the needs of a single app).
-- Add better support for landscape.
 - Add Tests
 
 ### Requirements
