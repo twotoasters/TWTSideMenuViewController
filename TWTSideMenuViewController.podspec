@@ -1,132 +1,26 @@
-#
-#  Be sure to run `pod spec lint TWTSideMenuViewController.podspec' to ensure this is a
-#  valid spec and to remove all comments including this before submitting the spec.
-#
-#  To learn more about Podspec attributes see http://docs.cocoapods.org/specification.html
-#  To see working Podspecs in the CocoaPods repo see https://github.com/CocoaPods/Specs/
-#
-
 Pod::Spec.new do |s|
-
-  # ―――  Spec Metadata  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  These will help people to find your library, and whilst it
-  #  can feel like a chore to fill in it's definitely to your advantage. The
-  #  summary should be tweet-length, and the description more in depth.
-  #
-
   s.name         = "TWTSideMenuViewController"
-  s.version      = "0.0.1"
+  s.version      = "0.1"
   s.summary      = "Side Menus for iOS 7."
 
   s.description  = <<-DESC
-                   A longer description of TWTSideMenuViewController in Markdown format.
+  One of the most common implementations of menu views has been the "Side Drawer", "basement", or "Side Menu" made popular in apps such as Facebook and Path. When the user taps to open the side menu the user's main context slides to the right (or left in some implementations) to display another view below. This works well in iOS 6 and before. What does it mean for iOS 7?
 
-                   * Think: Why did you write this? What is the focus? What does it do?
-                   * CocoaPods will be using this to generate tags, and improve search results.
-                   * Try to keep it short, snappy and to the point.
-                   * Finally, don't worry about the indent, CocoaPods strips it!
+  With iOS 7, apps are encouraged to use the whole screen and not rely on the 20pt status bar to be outside of the plane of your app. This breaks the existing side bar idea in that the status bar now lives over two view contexts with a single style.
+
+  Working with the team at Luvocracy, we needed to find a way to show a side menu for our iOS 7 release. Many designers on Dribbble began looking at a new approach for side bars. Inspired by this we worked up a quick prototype that slides the view to the right and scales revealing the menu as seen in the dribbble samples above. Moving forward from this idea and inspired by other ideas from iOS 7 we changed it from a slide to more of a viewport change.
                    DESC
 
   s.homepage     = "http://github.com/twotoasters/TWTSideMenuViewController"
-  # s.screenshots  = "www.example.com/screenshots_1", "www.example.com/screenshots_2"
 
-
-  # ―――  Spec License  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  Licensing your code is important. See http://choosealicense.com for more info.
-  #  CocoaPods will detect a license file if there is a named LICENSE*
-  #  Popular ones are 'MIT', 'BSD' and 'Apache License, Version 2.0'.
-  #
-
-  #s.license      = 'MIT (example)'
   s.license      = { :type => 'MIT' }
 
-
-  # ――― Author Metadata  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  Specify the authors of the library, with email addresses. Email addresses
-  #  of the authors by using the SCM log. E.g. $ git log. If no email can be
-  #  found CocoaPods accept just the names.
-  #
-
   s.author       = { "Josh Johnson" => "josh@jnjosh.com" }
-  # s.authors      = { "Tom Burns" => "tomburns@gmail.com", "other author" => "email@address.com" }
-  # s.author       = 'Tom Burns', 'other author'
-
-
-  # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  If this Pod runs only on iOS or OS X, then specify the platform and
-  #  the deployment target. You can optionally include the target after the platform.
-  #
 
    s.platform     = :ios
    s.platform     = :ios, '6.0'
 
-  #  When using multiple platforms
-  # s.ios.deployment_target = '5.0'
-  # s.osx.deployment_target = '10.7'
-
-
-  # ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  Specify the location from where the source should be retrieved.
-  #  Supports git, hg, svn and HTTP.
-  #
-
-  s.source       = { :git => "http://github.com/twotoasters/TWTSideMenuViewController.git", :tag => "0.0.1" }
-
-
-  # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  CocoaPods is smart about how it includes source code. For source files
-  #  giving a folder will include any h, m, mm, c & cpp files. For header
-  #  files it will include any header in the folder.
-  #  Not including the public_header_files will make all headers public.
-  #
+  s.source       = { :git => "https://github.com/twotoasters/TWTSideMenuViewController.git", :tag => "v0.1" }
 
   s.source_files  = 'TWTSideMenuViewController'
-
-  # s.public_header_files = 'Classes/**/*.h'
-
-
-  # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  A list of resources included with the Pod. These are copied into the
-  #  target bundle with a build phase script. Anything else will be cleaned.
-  #  You can preserve files from being cleaned, please don't preserve
-  #  non-essential files like tests, examples and documentation.
-  #
-
-  # s.resource  = "icon.png"
-  # s.resources = "Resources/*.png"
-
-  # s.preserve_paths = "FilesToSave", "MoreFilesToSave"
-
-
-  # ――― Project Linking ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  Link your library with frameworks, or libraries. Libraries do not include
-  #  the lib prefix of their name.
-  #
-
-  # s.framework  = 'SomeFramework'
-  # s.frameworks = 'SomeFramework', 'AnotherFramework'
-
-  # s.library   = 'iconv'
-  # s.libraries = 'iconv', 'xml2'
-
-
-  # ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  If your library depends on compiler flags you can set them in the xcconfig hash
-  #  where they will only apply to your library. If you depend on other Podspecs
-  #  you can include multiple dependencies to ensure it works.
-
-  # s.requires_arc = true
-
-  # s.xcconfig = { 'HEADER_SEARCH_PATHS' => '$(SDKROOT)/usr/include/libxml2' }
-  # s.dependency 'JSONKit', '~> 1.4'
-
 end
