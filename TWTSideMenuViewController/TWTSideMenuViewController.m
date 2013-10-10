@@ -114,9 +114,6 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
 
         [UIView animateWithDuration:duration animations:^{
             // Effectively closes the menu and reapplies transform. This is a half measure to get around the problem of new view controllers getting pushed on to the hierarchy without the proper height navigation.
-            
-            NSLog(@"%@ - %i - %f", NSStringFromCGRect(self.view.bounds), self.interfaceOrientation, CGRectGetMidX(self.view.bounds));
-            
             self.menuViewController.view.transform = [self closeTransformForMenuView];
             self.containerView.transform = CGAffineTransformIdentity;
         } completion:^(BOOL finished) {
