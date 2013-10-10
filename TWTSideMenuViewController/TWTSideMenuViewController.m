@@ -85,11 +85,16 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     [self.mainViewController didMoveToParentViewController:self];
 
     [self addChildViewController:self.menuViewController];
-    self.menuViewController.view.frame = self.view.bounds;
     self.menuViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view insertSubview:self.menuViewController.view belowSubview:self.containerView];
     self.menuViewController.view.transform = [self closeTransformForMenuView];
     [self.menuViewController didMoveToParentViewController:self];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    self.menuViewController.view.bounds = self.view.bounds;
 }
 
 - (BOOL)shouldAutorotate
@@ -113,14 +118,14 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
             // Effectively closes the menu and reapplies transform. This is a half measure to get around the problem of new view controllers getting pushed on to the hierarchy without the proper height navigation.
             self.menuViewController.view.transform = [self closeTransformForMenuView];
             self.containerView.transform = CGAffineTransformIdentity;
+        } completion:^(BOOL finished) {
+            self.menuViewController.view.bounds = self.view.bounds;
         }];
     }
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    self.menuViewController.view.bounds = self.view.bounds;
-
     if (self.open) {
         [UIView animateWithDuration:0.2 animations:^{
             self.menuViewController.view.transform = CGAffineTransformIdentity;
@@ -131,6 +136,15 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
         }];
     } else {
         [self addShadowToViewController:self.mainViewController];
+    }
+}
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    // Reset the menu view's frame while the menu is closed. This keeps the menu position correctly when the menu is closed.
+    if (!self.open) {
+        self.menuViewController.view.transform = [self closeTransformForMenuView];
+        self.menuViewController.view.bounds = self.view.bounds;
     }
 }
 
