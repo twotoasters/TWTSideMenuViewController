@@ -136,7 +136,7 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
             [self addOverlayButtonToMainViewController];
         }];
     } else {
-        [self updateMenuViewWithTransform:[self closeTransformForMenuView]];
+        [self updateMenuViewWithTransform:CGAffineTransformIdentity];
         [self addShadowToViewController:self.mainViewController];
     }
 }
@@ -200,6 +200,7 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
         return;
     }
     self.open = YES;
+    self.menuViewController.view.transform = [self closeTransformForMenuView];
 
     void (^openMenuBlock)(void) = ^{
         self.menuViewController.view.transform = CGAffineTransformIdentity;
@@ -250,6 +251,7 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
         if (finished) {
             [self updateStatusBarStyle];
         }
+        self.menuViewController.view.transform = CGAffineTransformIdentity;
 
         if (completion) {
             completion(finished);
