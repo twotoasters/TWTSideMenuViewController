@@ -117,6 +117,7 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
             self.menuViewController.view.transform = [self closeTransformForMenuView];
             self.containerView.transform = CGAffineTransformIdentity;
         } completion:^(BOOL finished) {
+            self.menuViewController.view.center = (CGPoint) { CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) };
             self.menuViewController.view.bounds = self.view.bounds;
         }];
     } else {
