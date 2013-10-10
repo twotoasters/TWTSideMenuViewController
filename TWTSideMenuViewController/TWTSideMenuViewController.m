@@ -85,11 +85,14 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     [self.mainViewController didMoveToParentViewController:self];
 
     [self addChildViewController:self.menuViewController];
-    self.menuViewController.view.frame = self.view.bounds;
-    self.menuViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view insertSubview:self.menuViewController.view belowSubview:self.containerView];
-    self.menuViewController.view.transform = [self closeTransformForMenuView];
     [self.menuViewController didMoveToParentViewController:self];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self updateMenuViewWithTransform:[self closeTransformForMenuView]];
 }
 
 - (BOOL)shouldAutorotate
@@ -113,14 +116,17 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
             // Effectively closes the menu and reapplies transform. This is a half measure to get around the problem of new view controllers getting pushed on to the hierarchy without the proper height navigation.
             self.menuViewController.view.transform = [self closeTransformForMenuView];
             self.containerView.transform = CGAffineTransformIdentity;
+        } completion:^(BOOL finished) {
+            self.menuViewController.view.center = (CGPoint) { CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) };
+            self.menuViewController.view.bounds = self.view.bounds;
         }];
+    } else {
+        [self updateMenuViewWithTransform:CGAffineTransformIdentity];
     }
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    self.menuViewController.view.bounds = self.view.bounds;
-
     if (self.open) {
         [UIView animateWithDuration:0.2 animations:^{
             self.menuViewController.view.transform = CGAffineTransformIdentity;
@@ -130,7 +136,16 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
             [self addOverlayButtonToMainViewController];
         }];
     } else {
+        [self updateMenuViewWithTransform:[self closeTransformForMenuView]];
         [self addShadowToViewController:self.mainViewController];
+    }
+}
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    // Reset the menu view's frame while the menu is closed. This keeps the menu position correctly when the menu is closed.
+    if (!self.open) {
+        [self updateMenuViewWithTransform:[self closeTransformForMenuView]];
     }
 }
 
@@ -158,11 +173,18 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
 
 #pragma mark - Menu Management
 
+- (void)updateMenuViewWithTransform:(CGAffineTransform)transform
+{
+    self.menuViewController.view.transform = transform;
+    self.menuViewController.view.center = (CGPoint) { CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) };
+    self.menuViewController.view.bounds = self.view.bounds;
+}
+
 - (CGAffineTransform)closeTransformForMenuView
 {
     CGFloat transformSize = 1.0f / self.zoomScale;
     CGAffineTransform transform = CGAffineTransformScale(self.menuViewController.view.transform, transformSize, transformSize);
-    return CGAffineTransformTranslate(transform, -(CGRectGetMidX(self.containerView.bounds)) - self.edgeOffset.horizontal, -self.edgeOffset.vertical);
+    return CGAffineTransformTranslate(transform, -(CGRectGetMidX(self.view.bounds)) - self.edgeOffset.horizontal, -self.edgeOffset.vertical);
 }
 
 - (CGAffineTransform)openTransformForView:(UIView *)view
