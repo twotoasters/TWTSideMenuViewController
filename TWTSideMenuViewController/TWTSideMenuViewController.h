@@ -26,6 +26,14 @@
 
 @interface TWTSideMenuViewController : UIViewController
 
+typedef NS_ENUM(NSInteger, TWTSideMenuAnimationType) {
+    TWTSideMenuAnimationTypeSlideOver, //Default - new view controllers slide over the old view controller.
+    TWTSideMenuAnimationTypeFadeIn //New View controllers fade in over the old view controller.
+};
+
+/** The animation type - will default to Slide Over. */
+@property (nonatomic, assign) TWTSideMenuAnimationType animationType;
+
 /** Time interval for opening and closing the side menu */
 @property (nonatomic, assign) NSTimeInterval animationDuration;
 
