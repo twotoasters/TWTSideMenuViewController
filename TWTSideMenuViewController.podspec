@@ -23,4 +23,6 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/twotoasters/TWTSideMenuViewController.git", :tag => "v0.1" }
 
   s.source_files  = 'TWTSideMenuViewController'
+
+  s.requires_arc = true
 end
