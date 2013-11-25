@@ -87,11 +87,7 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     [self addChildViewController:self.menuViewController];
     [self.view insertSubview:self.menuViewController.view belowSubview:self.containerView];
     [self.menuViewController didMoveToParentViewController:self];
-}
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
     [self updateMenuViewWithTransform:[self closeTransformForMenuView]];
 }
 
