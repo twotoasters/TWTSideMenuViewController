@@ -18,7 +18,6 @@
 		A4485E7E17BBCA75002B32C4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4485E6317BBCA75002B32C4 /* Foundation.framework */; };
 		A4485E7F17BBCA75002B32C4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4485E6717BBCA75002B32C4 /* UIKit.framework */; };
 		A4485E8717BBCA75002B32C4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A4485E8517BBCA75002B32C4 /* InfoPlist.strings */; };
-		A4485E8917BBCA75002B32C4 /* TWTSideMenuViewController_SampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A4485E8817BBCA75002B32C4 /* TWTSideMenuViewController_SampleTests.m */; };
 		A45D359417BBDF6B00BEF872 /* TWTSideMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A45D359317BBDF6B00BEF872 /* TWTSideMenuViewController.m */; };
 		A495C4D717BC109600B880E4 /* TWTMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A495C4D617BC109600B880E4 /* TWTMenuViewController.m */; };
 		A495C4DA17BC109F00B880E4 /* TWTMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A495C4D917BC109F00B880E4 /* TWTMainViewController.m */; };
@@ -51,7 +50,6 @@
 		A4485E7C17BBCA75002B32C4 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		A4485E8417BBCA75002B32C4 /* TWTSideMenuViewController-SampleTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TWTSideMenuViewController-SampleTests-Info.plist"; sourceTree = "<group>"; };
 		A4485E8617BBCA75002B32C4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		A4485E8817BBCA75002B32C4 /* TWTSideMenuViewController_SampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TWTSideMenuViewController_SampleTests.m; sourceTree = "<group>"; };
 		A45D359217BBDF6B00BEF872 /* TWTSideMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWTSideMenuViewController.h; sourceTree = "<group>"; };
 		A45D359317BBDF6B00BEF872 /* TWTSideMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TWTSideMenuViewController.m; sourceTree = "<group>"; };
 		A495C4D517BC109600B880E4 /* TWTMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWTMenuViewController.h; sourceTree = "<group>"; };
@@ -146,7 +144,6 @@
 		A4485E8217BBCA75002B32C4 /* TWTSideMenuViewController-SampleTests */ = {
 			isa = PBXGroup;
 			children = (
-				A4485E8817BBCA75002B32C4 /* TWTSideMenuViewController_SampleTests.m */,
 				A4485E8317BBCA75002B32C4 /* Supporting Files */,
 			);
 			path = "TWTSideMenuViewController-SampleTests";
@@ -279,7 +276,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A4485E8917BBCA75002B32C4 /* TWTSideMenuViewController_SampleTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
