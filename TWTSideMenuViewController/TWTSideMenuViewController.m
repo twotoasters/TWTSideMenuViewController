@@ -147,16 +147,21 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
 
 #pragma mark - Status Bar management
 
-- (UIStatusBarStyle)preferredStatusBarStyle
+- (UIViewController *)childViewControllerForStatusBarStyle
 {
-    if ([self respondsToSelector:@selector(preferredStatusBarStyle)]) {
-        if (self.open) {
-            return self.menuViewController.preferredStatusBarStyle;
-        } else {
-            return self.mainViewController.preferredStatusBarStyle;
-        }
+    if (self.open) {
+        return self.menuViewController;
     } else {
-        return UIStatusBarStyleDefault;
+        return self.mainViewController;
+    }
+}
+
+- (UIViewController *)childViewControllerForStatusBarHidden
+{
+    if (self.open) {
+        return self.menuViewController;
+    } else {
+        return self.mainViewController;
     }
 }
 
