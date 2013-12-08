@@ -27,7 +27,24 @@ static NSString * const kTableViewCellIdentifier = @"com.twotoasters.sampleCell"
     UIBarButtonItem *openItem = [[UIBarButtonItem alloc] initWithTitle:@"Open" style:UIBarButtonItemStylePlain target:self action:@selector(openButtonPressed)];
     self.navigationItem.leftBarButtonItem = openItem;
     
+    UIBarButtonItem *testItem = [[UIBarButtonItem alloc] initWithTitle:@"Show Modal" style:UIBarButtonItemStylePlain target:self action:@selector(testButtonAction)];
+    self.navigationItem.rightBarButtonItem = testItem;
+   
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kTableViewCellIdentifier];
+}
+
+- (void)testButtonAction
+{
+    // Test with presenting a modal view controller when in the context of a menuviewcontroller
+    UIViewController *viewController = [[UIViewController alloc] initWithNibName:nil bundle:nil];
+    viewController.view.backgroundColor = [UIColor redColor];
+    [self presentViewController:viewController animated:YES completion:^{
+        double delayInSeconds = 1.0;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [viewController dismissViewControllerAnimated:YES completion:nil];
+        });
+    }];
 }
 
 - (void)openButtonPressed
