@@ -16,6 +16,10 @@ TWTSideMenuViewController is not yet in the CocoaPods Spec repo. Until then you 
 
 `pod 'TWTSideMenuViewController', :git => 'https://github.com/twotoasters/TWTSideMenuViewController.git'`
 
+Then re-run: 
+
+`pod install`
+
 ### Usage
 
 TWTSideMenuViewController is implemented using a single parent view controller that manages your menu and main views as child view controllers. To set it up, initialize a new instance of TWTSideMenuViewController and supply a menu view controller and a main view controller.
