@@ -107,15 +107,6 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
 
     if (self.open) {
         [self removeOverlayButtonFromMainViewController];
-
-        [UIView animateWithDuration:duration animations:^{
-            // Effectively closes the menu and reapplies transform. This is a half measure to get around the problem of new view controllers getting pushed on to the hierarchy without the proper height navigation.
-            self.menuViewController.view.transform = [self closeTransformForMenuView];
-            self.containerView.transform = CGAffineTransformIdentity;
-        } completion:^(BOOL finished) {
-            self.menuViewController.view.center = (CGPoint) { CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) };
-            self.menuViewController.view.bounds = self.view.bounds;
-        }];
     } else {
         [self updateMenuViewWithTransform:CGAffineTransformIdentity];
     }
@@ -124,24 +115,12 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     if (self.open) {
-        [UIView animateWithDuration:0.2 animations:^{
-            self.menuViewController.view.transform = CGAffineTransformIdentity;
-            self.containerView.transform = [self openTransformForView:self.containerView];
-        } completion:^(BOOL finished) {
-            [self addShadowToViewController:self.mainViewController];
-            [self addOverlayButtonToMainViewController];
-        }];
+        [self rotateTransformForOpenPosition];
+        [self addShadowToViewController:self.mainViewController];
+        [self addOverlayButtonToMainViewController];
     } else {
         [self updateMenuViewWithTransform:CGAffineTransformIdentity];
         [self addShadowToViewController:self.mainViewController];
-    }
-}
-
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-    // Reset the menu view's frame while the menu is closed. This keeps the menu position correctly when the menu is closed.
-    if (!self.open) {
-        [self updateMenuViewWithTransform:[self closeTransformForMenuView]];
     }
 }
 
@@ -195,17 +174,42 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     return CGAffineTransformScale(newTransform, transformSize, transformSize);
 }
 
+- (void)transformToOpenPosition
+{
+    self.menuViewController.view.transform = CGAffineTransformIdentity;
+    self.containerView.transform = [self openTransformForView:self.containerView];
+}
+
+- (void)transformToClosePosition
+{
+    self.menuViewController.view.transform = [self closeTransformForMenuView];
+    self.containerView.transform = CGAffineTransformIdentity;
+}
+
+- (void)rotateTransformForOpenPosition
+{
+    // reset the transform back to it's invert (undo the transform)
+    self.containerView.transform = CGAffineTransformConcat(self.containerView.transform, CGAffineTransformInvert(self.containerView.transform));
+    
+    // transform to the newly updated transform for the current orientation
+    self.containerView.transform = [self openTransformForView:self.containerView];
+    
+    // update view hierarchy
+    self.menuViewController.view.transform = CGAffineTransformIdentity;
+    self.containerView.bounds = self.view.bounds;
+    self.mainViewController.view.frame = self.containerView.bounds;
+}
+
 - (void)openMenuAnimated:(BOOL)animated completion:(void (^)(BOOL finished))completion
 {
     if (self.open) {
         return;
     }
     self.open = YES;
-    self.menuViewController.view.transform = [self closeTransformForMenuView];
+    [self transformToClosePosition];
 
     void (^openMenuBlock)(void) = ^{
-        self.menuViewController.view.transform = CGAffineTransformIdentity;
-        self.containerView.transform = [self openTransformForView:self.containerView];
+        [self transformToOpenPosition];
     };
     
     void (^openCompleteBlock)(BOOL) = ^(BOOL finished) {
@@ -244,8 +248,7 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     [self removeOverlayButtonFromMainViewController];
     
     void (^closeMenuBlock)(void) = ^{
-        self.menuViewController.view.transform = [self closeTransformForMenuView];
-        self.containerView.transform = CGAffineTransformIdentity;
+        [self transformToClosePosition];
     };
     
     void (^closeCompleteBlock)(BOOL) = ^(BOOL finished) {
@@ -306,11 +309,12 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     [self addViewController:incomingViewController];
     [self.containerView addSubview:incomingViewController.view];
 
+    self.containerView.bounds = self.view.bounds;
     incomingViewController.view.frame = self.containerView.bounds;
     incomingViewController.view.transform = CGAffineTransformTranslate(incomingViewController.view.transform, outgoingStartX, 0.0f);
     
     void (^swapChangeBlock)(void) = ^{
-        incomingViewController.view.transform = CGAffineTransformIdentity;
+        incomingViewController.view.transform = CGAffineTransformConcat(incomingViewController.view.transform, CGAffineTransformInvert(incomingViewController.view.transform));
     };
     
     void (^finishedChangeBlock)(BOOL finished) = ^(BOOL finished) {
