@@ -307,7 +307,6 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
 
     incomingViewController.view.frame = self.containerView.bounds;
     
-    
     //Create default animation curve.
     UIViewAnimationOptions options = UIViewAnimationOptionCurveEaseInOut;
     switch (self.animationType) {
@@ -318,9 +317,8 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
             break;
         }
         case TWTSideMenuAnimationTypeFadeIn:
-            incomingViewController.view.alpha = .6;
+            incomingViewController.view.alpha = 0.6f;
             options = UIViewAnimationOptionCurveEaseOut;
-
             break;
     }
 
@@ -331,7 +329,7 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
                 incomingViewController.view.transform = CGAffineTransformIdentity;
                 break;
             case TWTSideMenuAnimationTypeFadeIn:
-                incomingViewController.view.alpha = 1;
+                incomingViewController.view.alpha = 1.0f;
             default:
                 break;
         }
