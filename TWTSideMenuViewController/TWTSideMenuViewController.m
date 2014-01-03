@@ -64,6 +64,7 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
 - (void)commonInitialization
 {
     self.animationDuration = kDefaultAnimationDuration;
+    self.animationType = TWTSideMenuAnimationTypeSlideOver;
     
     [self addViewController:self.menuViewController];
     [self addViewController:self.mainViewController];
@@ -294,7 +295,6 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     animation.duration = kDefaultAnimationDuration;
     [overlayView.layer addAnimation:animation forKey:@"opacity"];
     
-    CGFloat outgoingStartX = CGRectGetMaxX(outgoingViewController.view.frame);
     NSTimeInterval changeTimeInterval = kDefaultSwapAnimationDuration;
     NSTimeInterval delayInterval = kDefaultAnimationDelayDuration;
     if (!self.open) {
@@ -307,10 +307,33 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     [self.containerView addSubview:incomingViewController.view];
 
     incomingViewController.view.frame = self.containerView.bounds;
-    incomingViewController.view.transform = CGAffineTransformTranslate(incomingViewController.view.transform, outgoingStartX, 0.0f);
+    
+    //Create default animation curve.
+    UIViewAnimationOptions options = UIViewAnimationOptionCurveEaseInOut;
+    switch (self.animationType) {
+        case TWTSideMenuAnimationTypeSlideOver: {
+            CGFloat outgoingStartX = CGRectGetMaxX(outgoingViewController.view.frame);
+
+            incomingViewController.view.transform = CGAffineTransformTranslate(incomingViewController.view.transform, outgoingStartX, 0.0f);
+            break;
+        }
+        case TWTSideMenuAnimationTypeFadeIn:
+            incomingViewController.view.alpha = 0.6f;
+            options = UIViewAnimationOptionCurveEaseOut;
+            break;
+    }
+
     
     void (^swapChangeBlock)(void) = ^{
-        incomingViewController.view.transform = CGAffineTransformIdentity;
+        switch (self.animationType) {
+            case TWTSideMenuAnimationTypeSlideOver:
+                incomingViewController.view.transform = CGAffineTransformIdentity;
+                break;
+            case TWTSideMenuAnimationTypeFadeIn:
+                incomingViewController.view.alpha = 1.0f;
+            default:
+                break;
+        }
     };
     
     void (^finishedChangeBlock)(BOOL finished) = ^(BOOL finished) {
@@ -331,7 +354,7 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
         
         [UIView animateWithDuration:changeTimeInterval
                               delay:delayInterval
-                            options:UIViewAnimationOptionCurveEaseInOut
+                            options:options
                          animations:swapChangeBlock
                          completion:finishedChangeBlock];
     } else {
