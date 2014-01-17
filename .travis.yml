@@ -1,3 +1,4 @@
 language: objective-c
 xcode_project: TWTSideMenuViewController-Sample.xcodeproj 
 xcode_scheme: TWTSideMenuViewController-Sample
+xcode_sdk: iphonesimulator
