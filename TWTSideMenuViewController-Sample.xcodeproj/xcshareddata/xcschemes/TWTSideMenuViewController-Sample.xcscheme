@@ -32,16 +32,6 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A4485E7A17BBCA75002B32C4"
-               BuildableName = "TWTSideMenuViewController-SampleTests.xctest"
-               BlueprintName = "TWTSideMenuViewController-SampleTests"
-               ReferencedContainer = "container:TWTSideMenuViewController-Sample.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "A4CBEDF118890683000A1EB1"
                BuildableName = "TWTSideMenuViewController-Tests.xctest"
                BlueprintName = "TWTSideMenuViewController-Tests"
