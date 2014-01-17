@@ -38,6 +38,16 @@
                ReferencedContainer = "container:TWTSideMenuViewController-Sample.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "A4CBEDF118890683000A1EB1"
+               BuildableName = "TWTSideMenuViewController-Tests.xctest"
+               BlueprintName = "TWTSideMenuViewController-Tests"
+               ReferencedContainer = "container:TWTSideMenuViewController-Sample.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

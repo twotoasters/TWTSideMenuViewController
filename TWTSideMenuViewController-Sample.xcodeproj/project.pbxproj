@@ -18,7 +18,22 @@
 		A495C4D717BC109600B880E4 /* TWTMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A495C4D617BC109600B880E4 /* TWTMenuViewController.m */; };
 		A495C4DA17BC109F00B880E4 /* TWTMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A495C4D917BC109F00B880E4 /* TWTMainViewController.m */; };
 		A495C4DC17BC11F500B880E4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A495C4DB17BC11F500B880E4 /* Images.xcassets */; };
+		A4CBEDF318890683000A1EB1 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4485E7C17BBCA75002B32C4 /* XCTest.framework */; };
+		A4CBEDF418890683000A1EB1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4485E6317BBCA75002B32C4 /* Foundation.framework */; };
+		A4CBEDF518890683000A1EB1 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4485E6717BBCA75002B32C4 /* UIKit.framework */; };
+		A4CBEDFB18890683000A1EB1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A4CBEDF918890683000A1EB1 /* InfoPlist.strings */; };
+		A4CBEDFD18890683000A1EB1 /* TWTSideMenuViewControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A4CBEDFC18890683000A1EB1 /* TWTSideMenuViewControllerTests.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A4CBEDFF18890683000A1EB1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4485E5817BBCA75002B32C4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A4485E5F17BBCA75002B32C4;
+			remoteInfo = "TWTSideMenuViewController-Sample";
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		A43DC61B17CCE1A500F16C6A /* galaxy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = galaxy.png; sourceTree = "<group>"; };
@@ -40,6 +55,11 @@
 		A495C4D817BC109F00B880E4 /* TWTMainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWTMainViewController.h; sourceTree = "<group>"; };
 		A495C4D917BC109F00B880E4 /* TWTMainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TWTMainViewController.m; sourceTree = "<group>"; };
 		A495C4DB17BC11F500B880E4 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		A4CBEDF218890683000A1EB1 /* TWTSideMenuViewController-Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "TWTSideMenuViewController-Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A4CBEDF818890683000A1EB1 /* TWTSideMenuViewController-Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TWTSideMenuViewController-Tests-Info.plist"; sourceTree = "<group>"; };
+		A4CBEDFA18890683000A1EB1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A4CBEDFC18890683000A1EB1 /* TWTSideMenuViewControllerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TWTSideMenuViewControllerTests.m; sourceTree = "<group>"; };
+		A4CBEDFE18890683000A1EB1 /* TWTSideMenuViewController-Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TWTSideMenuViewController-Tests-Prefix.pch"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +73,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A4CBEDEF18890683000A1EB1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A4CBEDF318890683000A1EB1 /* XCTest.framework in Frameworks */,
+				A4CBEDF518890683000A1EB1 /* UIKit.framework in Frameworks */,
+				A4CBEDF418890683000A1EB1 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -61,6 +91,7 @@
 			children = (
 				A45D358F17BBDD0F00BEF872 /* TWTSideMenuViewController */,
 				A4485E6917BBCA75002B32C4 /* TWTSideMenuViewController-Sample */,
+				A4CBEDF618890683000A1EB1 /* TWTSideMenuViewController-Tests */,
 				A4485E6217BBCA75002B32C4 /* Frameworks */,
 				A4485E6117BBCA75002B32C4 /* Products */,
 			);
@@ -70,6 +101,7 @@
 			isa = PBXGroup;
 			children = (
 				A4485E6017BBCA75002B32C4 /* TWTSideMenuViewController-Sample.app */,
+				A4CBEDF218890683000A1EB1 /* TWTSideMenuViewController-Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -121,6 +153,25 @@
 			path = TWTSideMenuViewController;
 			sourceTree = "<group>";
 		};
+		A4CBEDF618890683000A1EB1 /* TWTSideMenuViewController-Tests */ = {
+			isa = PBXGroup;
+			children = (
+				A4CBEDFC18890683000A1EB1 /* TWTSideMenuViewControllerTests.m */,
+				A4CBEDF718890683000A1EB1 /* Supporting Files */,
+			);
+			path = "TWTSideMenuViewController-Tests";
+			sourceTree = "<group>";
+		};
+		A4CBEDF718890683000A1EB1 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A4CBEDF818890683000A1EB1 /* TWTSideMenuViewController-Tests-Info.plist */,
+				A4CBEDF918890683000A1EB1 /* InfoPlist.strings */,
+				A4CBEDFE18890683000A1EB1 /* TWTSideMenuViewController-Tests-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -141,6 +192,24 @@
 			productReference = A4485E6017BBCA75002B32C4 /* TWTSideMenuViewController-Sample.app */;
 			productType = "com.apple.product-type.application";
 		};
+		A4CBEDF118890683000A1EB1 /* TWTSideMenuViewController-Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A4CBEE0118890683000A1EB1 /* Build configuration list for PBXNativeTarget "TWTSideMenuViewController-Tests" */;
+			buildPhases = (
+				A4CBEDEE18890683000A1EB1 /* Sources */,
+				A4CBEDEF18890683000A1EB1 /* Frameworks */,
+				A4CBEDF018890683000A1EB1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A4CBEE0018890683000A1EB1 /* PBXTargetDependency */,
+			);
+			name = "TWTSideMenuViewController-Tests";
+			productName = "TWTSideMenuViewController-Tests";
+			productReference = A4CBEDF218890683000A1EB1 /* TWTSideMenuViewController-Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -150,6 +219,11 @@
 				CLASSPREFIX = TWT;
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Two Toasters";
+				TargetAttributes = {
+					A4CBEDF118890683000A1EB1 = {
+						TestTargetID = A4485E5F17BBCA75002B32C4;
+					};
+				};
 			};
 			buildConfigurationList = A4485E5B17BBCA75002B32C4 /* Build configuration list for PBXProject "TWTSideMenuViewController-Sample" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -164,6 +238,7 @@
 			projectRoot = "";
 			targets = (
 				A4485E5F17BBCA75002B32C4 /* TWTSideMenuViewController-Sample */,
+				A4CBEDF118890683000A1EB1 /* TWTSideMenuViewController-Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -176,6 +251,14 @@
 				A4485E6E17BBCA75002B32C4 /* InfoPlist.strings in Resources */,
 				A43DC61C17CCE1A500F16C6A /* galaxy.png in Resources */,
 				A495C4DC17BC11F500B880E4 /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A4CBEDF018890683000A1EB1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A4CBEDFB18890683000A1EB1 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -194,13 +277,37 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A4CBEDEE18890683000A1EB1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A4CBEDFD18890683000A1EB1 /* TWTSideMenuViewControllerTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A4CBEE0018890683000A1EB1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A4485E5F17BBCA75002B32C4 /* TWTSideMenuViewController-Sample */;
+			targetProxy = A4CBEDFF18890683000A1EB1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		A4485E6C17BBCA75002B32C4 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
 				A4485E6D17BBCA75002B32C4 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		A4CBEDF918890683000A1EB1 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A4CBEDFA18890683000A1EB1 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -306,6 +413,52 @@
 			};
 			name = Release;
 		};
+		A4CBEE0218890683000A1EB1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/TWTSideMenuViewController-Sample.app/TWTSideMenuViewController-Sample";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "TWTSideMenuViewController-Tests/TWTSideMenuViewController-Tests-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				INFOPLIST_FILE = "TWTSideMenuViewController-Tests/TWTSideMenuViewController-Tests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		A4CBEE0318890683000A1EB1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/TWTSideMenuViewController-Sample.app/TWTSideMenuViewController-Sample";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "TWTSideMenuViewController-Tests/TWTSideMenuViewController-Tests-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				INFOPLIST_FILE = "TWTSideMenuViewController-Tests/TWTSideMenuViewController-Tests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -326,6 +479,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		A4CBEE0118890683000A1EB1 /* Build configuration list for PBXNativeTarget "TWTSideMenuViewController-Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A4CBEE0218890683000A1EB1 /* Debug */,
+				A4CBEE0318890683000A1EB1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
