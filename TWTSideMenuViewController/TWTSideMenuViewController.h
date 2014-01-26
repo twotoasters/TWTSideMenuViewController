@@ -24,12 +24,23 @@
 
 @class TWTSideMenuViewController;
 
+@protocol TWTSideMenuViewControllerDelegate <NSObject>
+@optional
+- (void)willOpenMenu:(TWTSideMenuViewController *)sender;
+- (void)didOpenMenu:(TWTSideMenuViewController *)sender;
+- (void)willCloseMenu:(TWTSideMenuViewController *)sender;
+- (void)didCloseMenu:(TWTSideMenuViewController *)sender;
+@end
+
 @interface TWTSideMenuViewController : UIViewController
 
 typedef NS_ENUM(NSInteger, TWTSideMenuAnimationType) {
     TWTSideMenuAnimationTypeSlideOver, //Default - new view controllers slide over the old view controller.
     TWTSideMenuAnimationTypeFadeIn //New View controllers fade in over the old view controller.
 };
+
+/** The TWTSideMenuViewControllerDelegate */
+@property (nonatomic,strong) id delegate;
 
 /** The animation type - will default to Slide Over. */
 @property (nonatomic, assign) TWTSideMenuAnimationType animationType;
