@@ -52,19 +52,19 @@
     }
 }
 
-- (void)willOpenMenu:(TWTSideMenuViewController *)sender {
+- (void)sideMenuViewControllerWillOpenMenu:(TWTSideMenuViewController *)sender {
     NSLog(@"willOpenMenu");
 }
 
-- (void)didOpenMenu:(TWTSideMenuViewController *)sender {
+- (void)sideMenuViewControllerDidOpenMenu:(TWTSideMenuViewController *)sender {
     NSLog(@"didOpenMenu");
 }
 
-- (void)willCloseMenu:(TWTSideMenuViewController *)sender {
+- (void)sideMenuViewControllerWillCloseMenu:(TWTSideMenuViewController *)sender {
     NSLog(@"willCloseMenu");
 }
 
-- (void)didCloseMenu:(TWTSideMenuViewController *)sender {
+- (void)sideMenuViewControllerDidCloseMenu:(TWTSideMenuViewController *)sender {
 	NSLog(@"didCloseMenu");
 }
 
