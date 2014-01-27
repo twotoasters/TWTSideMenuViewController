@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TWTSideMenuViewController.h";
 
-@interface TWTAppDelegate : UIResponder <UIApplicationDelegate>
+@interface TWTAppDelegate : UIResponder <UIApplicationDelegate, TWTSideMenuViewControllerDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 

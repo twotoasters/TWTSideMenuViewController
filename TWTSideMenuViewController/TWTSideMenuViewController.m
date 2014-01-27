@@ -201,6 +201,11 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     if (self.open) {
         return;
     }
+    
+    if ([self.delegate respondsToSelector:@selector(sideMenuViewControllerWillOpenMenu:)]) {
+	    [self.delegate sideMenuViewControllerWillOpenMenu:self];
+    }
+    
     self.open = YES;
     self.menuViewController.view.transform = [self closeTransformForMenuView];
 
@@ -212,6 +217,10 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     void (^openCompleteBlock)(BOOL) = ^(BOOL finished) {
         if (finished) {
             [self addOverlayButtonToMainViewController];
+        }
+        
+        if ([self.delegate respondsToSelector:@selector(sideMenuViewControllerDidOpenMenu:)]) {
+	        [self.delegate sideMenuViewControllerDidOpenMenu:self];
         }
         
         if (completion) {
@@ -240,6 +249,11 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     if (!self.open) {
         return;
     }
+    
+    if ([self.delegate respondsToSelector:@selector(sideMenuViewControllerWillCloseMenu:)]) {
+	    [self.delegate sideMenuViewControllerWillCloseMenu:self];
+    }
+    
     self.open = NO;
     
     [self removeOverlayButtonFromMainViewController];
@@ -255,6 +269,10 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
         }
         self.menuViewController.view.transform = CGAffineTransformIdentity;
 
+        if ([self.delegate respondsToSelector:@selector(sideMenuViewControllerDidCloseMenu:)]) {
+	        [self.delegate sideMenuViewControllerDidCloseMenu:self];
+        }
+        
         if (completion) {
             completion(finished);
         }

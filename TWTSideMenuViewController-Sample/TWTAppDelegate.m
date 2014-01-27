@@ -33,6 +33,7 @@
     self.sideMenuViewController.shadowColor = [UIColor blackColor];
     self.sideMenuViewController.edgeOffset = (UIOffset) { .horizontal = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ? 18.0f : 0.0f };
     self.sideMenuViewController.zoomScale = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ? 0.5634f : 0.85f;
+    self.sideMenuViewController.delegate = self;
     self.window.rootViewController = self.sideMenuViewController;
     
     self.window.backgroundColor = [UIColor whiteColor];
@@ -49,6 +50,22 @@
     } else {
         return UIStatusBarStyleDefault;
     }
+}
+
+- (void)sideMenuViewControllerWillOpenMenu:(TWTSideMenuViewController *)sender {
+    NSLog(@"willOpenMenu");
+}
+
+- (void)sideMenuViewControllerDidOpenMenu:(TWTSideMenuViewController *)sender {
+    NSLog(@"didOpenMenu");
+}
+
+- (void)sideMenuViewControllerWillCloseMenu:(TWTSideMenuViewController *)sender {
+    NSLog(@"willCloseMenu");
+}
+
+- (void)sideMenuViewControllerDidCloseMenu:(TWTSideMenuViewController *)sender {
+	NSLog(@"didCloseMenu");
 }
 
 @end
