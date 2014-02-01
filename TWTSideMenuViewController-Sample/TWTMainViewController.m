@@ -39,7 +39,7 @@ static NSString * const kTableViewCellIdentifier = @"com.twotoasters.sampleCell"
     UIViewController *viewController = [[UIViewController alloc] initWithNibName:nil bundle:nil];
     viewController.view.backgroundColor = [UIColor redColor];
     [self presentViewController:viewController animated:YES completion:^{
-        double delayInSeconds = 5.0;
+        double delayInSeconds = 2.0;
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             [viewController dismissViewControllerAnimated:YES completion:nil];
