@@ -66,7 +66,7 @@ static NSString * const kTableViewCellIdentifier = @"com.twotoasters.sampleCell"
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    cell.textLabel.text = [NSString stringWithFormat:@"Row %i", indexPath.row + 1];
+    cell.textLabel.text = [NSString stringWithFormat:@"Row %li", indexPath.row + 1];
 }
 
 @end
