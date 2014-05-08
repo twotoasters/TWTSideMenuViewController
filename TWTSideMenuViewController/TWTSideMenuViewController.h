@@ -48,6 +48,9 @@ typedef NS_ENUM(NSInteger, TWTSideMenuAnimationType) {
 /** Time interval for opening and closing the side menu */
 @property (nonatomic, assign) NSTimeInterval animationDuration;
 
+/** Time interval for swapping main view controllers */
+@property (nonatomic, assign) NSTimeInterval animationSwapDuration;
+
 /** Is the menu currently open? */
 @property (nonatomic, assign, getter = isOpen) BOOL open;
 

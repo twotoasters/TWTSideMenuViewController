@@ -65,7 +65,8 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
 {
     self.animationDuration = kDefaultAnimationDuration;
     self.animationType = TWTSideMenuAnimationTypeSlideOver;
-    
+    self.animationSwapDuration = kDefaultSwapAnimationDuration;
+
     [self addViewController:self.menuViewController];
     [self addViewController:self.mainViewController];
 }
@@ -313,7 +314,7 @@ static NSTimeInterval const kDefaultSwapAnimationClosedDuration = 0.35;
     animation.duration = kDefaultAnimationDuration;
     [overlayView.layer addAnimation:animation forKey:@"opacity"];
     
-    NSTimeInterval changeTimeInterval = kDefaultSwapAnimationDuration;
+    NSTimeInterval changeTimeInterval = self.animationSwapDuration;
     NSTimeInterval delayInterval = kDefaultAnimationDelayDuration;
     if (!self.open) {
         changeTimeInterval = kDefaultSwapAnimationClosedDuration;
