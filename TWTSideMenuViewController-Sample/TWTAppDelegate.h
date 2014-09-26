@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "TWTSideMenuViewController.h";
+#import "TWTSideMenuViewController.h"
 
 @interface TWTAppDelegate : UIResponder <UIApplicationDelegate, TWTSideMenuViewControllerDelegate>
 
