@@ -28,6 +28,15 @@ static NSString * const kTableViewCellIdentifier = @"com.twotoasters.sampleCell"
     self.navigationItem.leftBarButtonItem = openItem;
     
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kTableViewCellIdentifier];
+    
+    UISwipeGestureRecognizer *swipeRightGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedRight:)];
+    swipeRightGesture.direction = UISwipeGestureRecognizerDirectionRight;
+    [self.view addGestureRecognizer:swipeRightGesture];
+}
+
+-(void)swipedRight:(UISwipeGestureRecognizer *)sender
+{
+    [self openButtonPressed];
 }
 
 - (void)openButtonPressed
