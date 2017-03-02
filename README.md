@@ -12,6 +12,16 @@ Working with the team at Luvocracy, we needed to find a way to show a side menu 
 
 ![SideMenuViewController](Artifacts/TWTSideMenu.gif)
 
+### CocoaPods Installation
+
+TWTSideMenuViewController is not yet in the CocoaPods Spec repo. Until then you can install it by adding the following entry to your Podfile: 
+
+`pod 'TWTSideMenuViewController', :git => 'https://github.com/twotoasters/TWTSideMenuViewController.git'`
+
+Then re-run: 
+
+`pod install`
+
 ### Usage
 
 TWTSideMenuViewController is implemented using a single parent view controller that manages your menu and main views as child view controllers. To set it up, initialize a new instance of TWTSideMenuViewController and supply a menu view controller and a main view controller.
